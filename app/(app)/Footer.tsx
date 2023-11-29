@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 
-import theme from '../theme';
+import theme from '../../theme';
 
 type FooterIconProps = {
   text: string;

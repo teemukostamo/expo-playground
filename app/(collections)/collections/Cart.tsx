@@ -9,21 +9,27 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { gql } from '@apollo/client';
-import { client } from '../../client';
-import type { CartItem } from '../../src/types';
-
-type Props = {
-  addToCart: (product: CartItem) => void;
-  product: {
-    title: string;
-    description: string;
-    variants: any;
-  };
-};
+import { client } from '../../../client';
+import theme from '../../../theme';
+import { CartItem } from '../../../src/types';
 
 const screenHeight = Dimensions.get('window').height;
 
-export default function ProductModal({ product, addToCart }: Props) {
+type Props = {
+  cart: CartItem[];
+  event_name: string;
+  event_date: string;
+  event_handle: string;
+  venue_map_url: string;
+};
+
+const Cart = ({
+  cart,
+  event_name,
+  event_date,
+  event_handle,
+  venue_map_url,
+}: Props) => {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
   const handleBuyNow = async () => {
@@ -32,10 +38,34 @@ export default function ProductModal({ product, addToCart }: Props) {
         mutation: CREATE_CHECKOUT,
         variables: {
           input: {
-            lineItems: [
+            lineItems: cart.map((item: any) => ({
+              variantId: item.variantId,
+              quantity: item.quantity,
+            })),
+            customAttributes: [
               {
-                variantId: product.variants.edges[0].node.id,
-                quantity: 1,
+                key: 'order_identifier',
+                value: '1234',
+              },
+              {
+                key: '_event_name',
+                value: event_name,
+              },
+              {
+                key: '_event_date',
+                value: event_date,
+              },
+              {
+                key: '_event_handle',
+                value: event_handle,
+              },
+              {
+                key: '_utm_source',
+                value: 'direct',
+              },
+              {
+                key: '_venue_map_url',
+                value: venue_map_url,
               },
             ],
           },
@@ -46,8 +76,9 @@ export default function ProductModal({ product, addToCart }: Props) {
         pathname: '/checkout',
         params: { webUrl: data.checkoutCreate.checkout.webUrl },
       });
+      // clear cart
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setBottomSheetVisible(false);
       router.push('/error');
     }
@@ -55,16 +86,15 @@ export default function ProductModal({ product, addToCart }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text>{product.title}</Text>
       <TouchableHighlight
-        style={styles.openButton}
         onPress={() => {
           setBottomSheetVisible(true);
         }}
       >
-        <Text style={styles.textStyle}>Details</Text>
+        <Text style={styles.openCartButton}>
+          View {cart.length} items in cart
+        </Text>
       </TouchableHighlight>
-
       <Modal
         animationType='slide'
         transparent={true}
@@ -75,37 +105,40 @@ export default function ProductModal({ product, addToCart }: Props) {
       >
         <View style={styles.bottomSheetWrapper}>
           <View style={styles.bottomSheet}>
-            <Text style={styles.modalText}>{product.title}</Text>
-            <Text style={styles.modalText}>{product.description}</Text>
+            <Text style={styles.modalText}>
+              Your cart for {event_name} {event_date}:
+            </Text>
+            {cart.map((item: any) => (
+              <Text key={item.variantId}>
+                {item.title} x {item.quantity}
+              </Text>
+            ))}
             <TouchableHighlight
               style={styles.closeButton}
               onPress={() => {
                 handleBuyNow();
               }}
             >
-              <Text style={styles.textStyle}>Add to order</Text>
+              <Text style={styles.textStyle}>Checkout</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={styles.closeButton}
+              onPress={() => {
+                setBottomSheetVisible(false);
+              }}
+            >
+              <Text style={styles.textStyle}>Continue Shopping</Text>
             </TouchableHighlight>
           </View>
         </View>
       </Modal>
-      <TouchableHighlight
-        style={styles.openButton}
-        onPress={() => {
-          addToCart({
-            variantId: product.variants.edges[0].node.id,
-            quantity: 1,
-            title: product.title,
-            price: 10,
-          });
-        }}
-      >
-        <Text style={styles.textStyle}>Add to cart</Text>
-      </TouchableHighlight>
     </View>
   );
-}
+};
 
-export const CREATE_CHECKOUT = gql`
+export default Cart;
+
+const CREATE_CHECKOUT = gql`
   mutation checkoutCreate($input: CheckoutCreateInput!) {
     checkoutCreate(input: $input) {
       checkout {
@@ -131,18 +164,12 @@ export const CREATE_CHECKOUT = gql`
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#2196F3',
-    padding: 20,
-    margin: 5,
-  },
-  openButton: {
-    backgroundColor: '#F194FF',
-    borderRadius: 20,
+    backgroundColor: theme.colors.lightgold,
     padding: 10,
-    elevation: 2,
+  },
+  openCartButton: {
+    color: 'white',
+    fontFamily: 'regular',
   },
   textStyle: {
     color: 'white',
@@ -156,7 +183,7 @@ const styles = StyleSheet.create({
   bottomSheet: {
     backgroundColor: 'white',
     padding: 16,
-    height: screenHeight * 0.4, // Example height for bottom sheet
+    height: screenHeight * 0.95,
     borderWidth: 1,
     borderColor: 'lightgrey',
     borderTopLeftRadius: 20,

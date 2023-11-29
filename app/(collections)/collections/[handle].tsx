@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Link, useLocalSearchParams } from 'expo-router';
 
 import { useQuery, gql } from '@apollo/client';
 import { client } from '../../../client';
 import { storeData, getData } from '../../../src/utils/AsyncStorageUtil';
-import ProductModal from '../../products/ProductModal';
-import PickupLocations from '../PickupLocations';
-import ProductListing from '../ProductListing';
+import EventCard from './EventCard';
+import PickupLocations from './PickupLocations';
+import ProductListing from './ProductListing';
+import Cart from './Cart';
 
 interface CartItem {
   variantId: string; // Unique identifier for the item, often the product variant ID
@@ -32,20 +33,18 @@ export default function Page() {
   if (!local.handle || typeof local.handle !== 'string') {
     return null;
   }
-  console.log('cart state', cart);
 
   useEffect(() => {
     const loadCart = async () => {
-      // vaihda tää collection.handle eikä local.handle
+      // vaihda tää collection.handle eikä local.handle?
       if (local.handle && typeof local.handle === 'string') {
-        console.log('getting itme with', local.handle);
         try {
           const storedCart = await getData(local.handle);
           if (storedCart && storedCart.length > 0) {
             setCart(storedCart);
           }
         } catch (error) {
-          console.log('error getting cart', error);
+          console.error('error getting cart', error);
         }
       }
     };
@@ -58,7 +57,7 @@ export default function Page() {
       try {
         await storeData(handle, cart);
       } catch (error) {
-        console.log('error setting cart', error);
+        console.error('error setting cart', error);
       }
     };
 
@@ -81,30 +80,30 @@ export default function Page() {
 
   if (!data) return <Text>No collection found.</Text>;
 
+  const { collectionByHandle } = data;
+
   return (
     <View style={styles.container}>
-      <Text>{data.collectionByHandle.title}</Text>
+      <EventCard collection={data.collectionByHandle} />
       <PickupLocations
         locationIds={JSON.parse(data.collectionByHandle.pickup_locations.value)}
         setSelectedPickupLocation={setSelectedPickupLocation}
+        selectedPickupLocation={selectedPickupLocation}
       />
       <ProductListing
         pickupLocation={selectedPickupLocation}
-        collectionHandle={data.collectionByHandle.handle}
         products={data.collectionByHandle.products.edges}
         addToCart={addToCart}
       />
-      {/* <FlatList
-        data={data.collectionByHandle.products.edges}
-        keyExtractor={({ node }) => node.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.container}>
-            <ProductModal addToCart={addToCart} product={item.node} />
-          </View>
-        )}
-      /> */}
-      <Text>Cart: {cart.length}</Text>
-      <Button onPress={() => router.back()} title='Go back' />
+      {cart && cart.length > 0 ? (
+        <Cart
+          cart={cart}
+          event_handle={collectionByHandle.handle}
+          event_date={collectionByHandle.event_date.value}
+          event_name={collectionByHandle.event_name.value}
+          venue_map_url={collectionByHandle.venue_map_url.value}
+        />
+      ) : null}
     </View>
   );
 }
@@ -112,6 +111,7 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignContent: 'flex-start',
   },
 });
 
@@ -121,7 +121,6 @@ export const GET_COLLECTION = gql`
       id
       handle
       title
-      description
       pickup_locations: metafield(
         namespace: "custom"
         key: "pickup_locations"
@@ -131,6 +130,15 @@ export const GET_COLLECTION = gql`
       image {
         src
         altText
+      }
+      event_date: metafield(namespace: "custom", key: "event_date") {
+        value
+      }
+      event_name: metafield(namespace: "custom", key: "event_name") {
+        value
+      }
+      venue_map_url: metafield(namespace: "custom", key: "venue_map") {
+        value
       }
       products(first: 50) {
         edges {

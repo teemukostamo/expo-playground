@@ -1,8 +1,8 @@
 import { useContext, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { AppContext } from '../../context/main';
+import { AppContext } from '../../../context/main';
 import { gql, useQuery } from '@apollo/client';
-import { client } from '../../client';
+import { client } from '../../../client';
 import { Link } from 'expo-router';
 
 export default function Page() {
@@ -22,7 +22,7 @@ export default function Page() {
   if (loading)
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text style={styles.text}>Loading...</Text>
       </View>
     );
 
@@ -32,16 +32,16 @@ export default function Page() {
   const { firstName, lastName, email, orders } = data.customer;
   return (
     <View style={styles.container}>
-      <Text>
+      <Text style={styles.text}>
         Welcome to Linecut {firstName} {lastName}
       </Text>
-      <Text>Your email: {email}</Text>
+      <Text style={styles.text}>Your email: {email}</Text>
       <FlatList
         data={orders.edges}
         keyExtractor={({ node }) => node.id.toString()}
         renderItem={({ item }) => (
           <View>
-            <Text>
+            <Text style={styles.text}>
               Order: {item.node.name} processedAt {item.node.processedAt}
             </Text>
           </View>
@@ -55,6 +55,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
   },
 });
 

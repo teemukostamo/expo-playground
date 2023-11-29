@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import { Link } from 'expo-router';
 
-import { save } from '../src/utils/SecureStorageUtil';
-import { client } from '../client';
+import { save } from '../../src/utils/SecureStorageUtil';
+import { client } from '../../client';
 import { gql } from '@apollo/client';
-import { AppContext } from '../context/main';
-import { loginAction } from '../context/auth';
+import { AppContext } from '../../context/main';
+import { loginAction } from '../../context/auth';
 
-import theme from '../theme';
+import theme from '../../theme';
 
 export default function LoginForm() {
   const { dispatch } = useContext(AppContext);
@@ -68,7 +68,7 @@ export default function LoginForm() {
   ) : (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/logo_gold.png')}
+        source={require('../../assets/images/logo_gold.png')}
         style={styles.logo}
         resizeMode='contain'
       />

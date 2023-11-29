@@ -1,14 +1,14 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Link } from 'expo-router';
 
-import theme from '../theme';
+import theme from '../../theme';
 
 export default function Header() {
   return (
     <View style={styles.header}>
       <Link href='/'>
         <Image
-          source={require('../assets/images/logo_white.png')}
+          source={require('../../assets/images/logo_white.png')}
           style={styles.headerText}
           resizeMode='contain'
         />
@@ -19,7 +19,7 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   header: {
-    height: 60, // You can adjust this value as needed
+    height: 60,
     backgroundColor: theme.colors.darkblue,
     justifyContent: 'center',
     alignItems: 'center',

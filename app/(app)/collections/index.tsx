@@ -1,13 +1,14 @@
 import { Text, FlatList, View, Button, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
 import { router } from 'expo-router';
-
 import { useQuery, gql } from '@apollo/client';
-import { client } from '../../client';
+
+import CollectionCard from './CollectionCard';
+import { client } from '../../../client';
+import theme from '../../../theme';
 
 export default function Page() {
   const { loading, error, data } = useQuery(GET_ALL_COLLECTIONS, {
-    variables: { first: 10 }, // adjust the number to the number of collections you want to fetch
+    variables: { first: 20 }, // adjust the number to the number of collections you want to fetch
     client: client,
   });
 
@@ -25,21 +26,10 @@ export default function Page() {
     <View style={styles.container}>
       <FlatList
         data={data.collections.edges}
+        numColumns={2}
         keyExtractor={({ node }) => node.id.toString()}
-        renderItem={({ item }) => (
-          <View>
-            <Link
-              href={{
-                pathname: '/collections/[handle]',
-                params: { handle: item.node.handle },
-              }}
-            >
-              {item.node.title}
-            </Link>
-          </View>
-        )}
+        renderItem={({ item }) => <CollectionCard collection={item.node} />}
       />
-      <Button onPress={() => router.back()} title='Go back' />
     </View>
   );
 }
@@ -47,6 +37,8 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    backgroundColor: theme.colors.darkblue,
   },
 });
 
@@ -58,7 +50,6 @@ export const GET_ALL_COLLECTIONS = gql`
           id
           title
           handle
-          description
           image {
             src
             altText

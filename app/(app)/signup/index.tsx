@@ -4,32 +4,34 @@ import {
   Text,
   StyleSheet,
   Pressable,
+  Button,
   TextInput,
   Image,
 } from 'react-native';
 import { Link, router } from 'expo-router';
-
-import { client } from '../../client';
 import { gql } from '@apollo/client';
-import { AppContext } from '../../context/main';
-import { loginAction } from '../../context/auth';
 
-import theme from '../../theme';
+import { client } from '../../../client';
+import { AppContext } from '../../../context/main';
+import { loginAction } from '../../../context/auth';
+
+import theme from '../../../theme';
 
 export default function LoginForm() {
   const { dispatch } = useContext(AppContext);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleReset = async (email: string) => {
+  const handleSignup = async (email: string, password: string) => {
     const { data, errors } = await client.mutate({
-      mutation: RESET_PASSWORD,
+      mutation: CREATE_ACCOUNT,
       variables: {
         input: {
           email,
+          password,
         },
       },
     });
-
     if (data.customerAccessTokenCreate.customerAccessToken) {
       const token =
         data.customerAccessTokenCreate.customerAccessToken.accessToken;
@@ -43,7 +45,7 @@ export default function LoginForm() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/images/logo_gold.png')}
+        source={require('../../../assets/images/logo_gold.png')}
         style={styles.logo}
         resizeMode='contain'
       />
@@ -54,10 +56,20 @@ export default function LoginForm() {
           onChangeText={setEmail}
           placeholderTextColor={'white'}
         />
+        <TextInput
+          placeholder='Password'
+          placeholderTextColor={'white'}
+          style={styles.input}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
       </View>
 
-      <Pressable style={styles.button} onPress={() => handleReset(email)}>
-        <Text style={styles.buttonText}>Reset Password</Text>
+      <Pressable
+        style={styles.button}
+        onPress={() => handleSignup(email, password)}
+      >
+        <Text style={styles.buttonText}>Create Account</Text>
       </Pressable>
       <View style={styles.linkContainer}>
         <Link style={styles.link} href='/'>
@@ -118,7 +130,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RESET_PASSWORD = gql`
+export const CREATE_ACCOUNT = gql`
   mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
     customerAccessTokenCreate(input: $input) {
       customerAccessToken {

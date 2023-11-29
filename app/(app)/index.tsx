@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useContext } from 'react';
-import { AppContext } from '../context/main';
+import { AppContext } from '../../context/main';
 import Login from './Login';
+import { Link } from 'expo-router';
 
 export default function Page() {
   const { state } = useContext(AppContext);
@@ -16,6 +17,7 @@ export default function Page() {
     return (
       <View style={styles.container}>
         <Text>Welcome to linecut screen</Text>
+        <Link href='/testing'>testing link</Link>
       </View>
     );
   }

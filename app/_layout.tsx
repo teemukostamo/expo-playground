@@ -1,10 +1,15 @@
-import { StyleSheet, SafeAreaView, StatusBar, View } from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  View,
+  Platform,
+} from 'react-native';
 import { Slot } from 'expo-router';
-import Header from './Header';
-import Footer from './Footer';
 import { useReducer, useCallback, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AppContext, initialState, mainReducer } from '../context/main';
 import { loginAction } from '../context/auth';
@@ -15,7 +20,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function HomeLayout() {
   const [state, dispatch] = useReducer(mainReducer, initialState);
-  const { auth } = state;
   const [fontsLoaded, fontError] = useFonts({
     regular: require('../assets/fonts/Montserrat-Regular.ttf'),
     title: require('../assets/fonts/BarlowCondensed-Bold.ttf'),
@@ -44,23 +48,17 @@ export default function HomeLayout() {
     return null;
   }
 
+  const Container = Platform.OS === 'ios' ? SafeAreaView : View;
+
   return (
     <>
       <AppContext.Provider value={{ state, dispatch }}>
-        <SafeAreaView onLayout={onLayoutRootView} style={styles.safeArea}>
-          <StatusBar barStyle='light-content' />
-          {auth.token === null ? (
-            <View style={styles.container}>
-              <Slot />
-            </View>
-          ) : (
-            <View style={styles.container}>
-              <Header />
-              <Slot />
-              <Footer />
-            </View>
-          )}
-        </SafeAreaView>
+        <SafeAreaProvider>
+          <Container onLayout={onLayoutRootView} style={styles.safeArea}>
+            <StatusBar barStyle='light-content' />
+            <Slot />
+          </Container>
+        </SafeAreaProvider>
       </AppContext.Provider>
     </>
   );

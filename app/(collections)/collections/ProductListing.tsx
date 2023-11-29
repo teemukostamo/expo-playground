@@ -1,5 +1,5 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import ProductModal from '../products/ProductModal';
+import ProductModal from '../../(app)/products/ProductModal';
 
 interface CartItem {
   variantId: string; // Unique identifier for the item, often the product variant ID
@@ -12,26 +12,20 @@ interface CartItem {
 }
 
 type Props = {
-  collectionHandle: string;
   pickupLocation: string;
   pickupTime?: string;
   products: any[];
   addToCart: (product: CartItem) => void;
 };
 
-const ProductListing = ({
-  collectionHandle,
-  pickupLocation,
-  products,
-  addToCart,
-}: Props) => {
+const ProductListing = ({ pickupLocation, products, addToCart }: Props) => {
   return (
     <View style={styles.container}>
-      <Text>product listing</Text>
-
       {pickupLocation !== '' && (
         <View>
-          <Text>showing products for {pickupLocation}</Text>
+          <Text style={{ color: 'white' }}>
+            showing products for {pickupLocation}
+          </Text>
           <FlatList
             data={products.filter((product) =>
               product.node.pickup_location_filter.value.includes(
