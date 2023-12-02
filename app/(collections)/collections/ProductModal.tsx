@@ -8,24 +8,37 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import { gql } from '@apollo/client';
 import type { CartItem } from '../../../src/types';
+import { parseProductAttributeOptions } from '../../../src/utils/cartUtils';
 import theme from '../../../theme';
 
 type Props = {
   addToCart: (product: CartItem) => void;
+  pickupLocation: string;
   product: {
     title: string;
     description: string;
     variants: any;
     images: any;
+    pickup_location_selection: {
+      value: string;
+    };
+    pickup_time_selection: {
+      value: string;
+    };
   };
 };
 
 const screenHeight = Dimensions.get('window').height;
 
-export default function ProductModal({ product, addToCart }: Props) {
+export default function ProductModal({
+  product,
+  addToCart,
+  pickupLocation,
+}: Props) {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
+
+  const pickupOptions = JSON.parse(product.pickup_location_selection.value);
 
   return product ? (
     <View style={styles.container}>
@@ -81,6 +94,33 @@ export default function ProductModal({ product, addToCart }: Props) {
               quantity: 1,
               title: product.title,
               price: 10,
+              imageSrc: product.images.edges[0].node.src,
+              customAttributes: [
+                {
+                  key: 'pickup_location_selection',
+                  value: parseProductAttributeOptions(
+                    pickupOptions.find((o: string) =>
+                      o.includes(pickupLocation)
+                    )
+                  ).humanReadable,
+                },
+                {
+                  key: '_integration_pickup_location',
+                  value: parseProductAttributeOptions(
+                    pickupOptions.find((o: string) =>
+                      o.includes(pickupLocation)
+                    )
+                  ).integration,
+                },
+                {
+                  key: 'pickup_time_selection',
+                  value: 'Pre-game',
+                },
+                {
+                  key: '_integration_pickup_time',
+                  value: '0',
+                },
+              ],
             });
           }}
         >
@@ -90,30 +130,6 @@ export default function ProductModal({ product, addToCart }: Props) {
     </View>
   ) : null;
 }
-
-const CREATE_CHECKOUT = gql`
-  mutation checkoutCreate($input: CheckoutCreateInput!) {
-    checkoutCreate(input: $input) {
-      checkout {
-        id
-        webUrl
-        lineItems(first: 5) {
-          edges {
-            node {
-              title
-              quantity
-            }
-          }
-        }
-      }
-      checkoutUserErrors {
-        code
-        field
-        message
-      }
-    }
-  }
-`;
 
 const styles = StyleSheet.create({
   container: {

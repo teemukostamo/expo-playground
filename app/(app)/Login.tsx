@@ -8,7 +8,7 @@ import {
   TextInput,
   Image,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 import { save } from '../../src/utils/SecureStorageUtil';
 import { client } from '../../client';
@@ -60,6 +60,7 @@ export default function LoginForm() {
       setIsError(true);
     } finally {
       setIsLoading(false);
+      router.push('/');
     }
   };
 

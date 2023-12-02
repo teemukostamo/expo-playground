@@ -1,5 +1,6 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import ProductModal from '../../(app)/products/ProductModal';
+import ProductModal from './ProductModal';
+import { CustomAttribute } from '../../../src/types';
 
 interface CartItem {
   variantId: string; // Unique identifier for the item, often the product variant ID
@@ -8,6 +9,7 @@ interface CartItem {
   price: number; // Price of the item
   quantity: number; // Quantity of this item in the cart
   imageSrc?: string; // URL of the item's image
+  customAttributes: CustomAttribute[]; // Custom attributes associated with the item
   // Add any other relevant fields, like size, color, etc.
 }
 
@@ -35,7 +37,11 @@ const ProductListing = ({ pickupLocation, products, addToCart }: Props) => {
             keyExtractor={({ node }) => node.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.container}>
-                <ProductModal addToCart={addToCart} product={item.node} />
+                <ProductModal
+                  pickupLocation={pickupLocation}
+                  addToCart={addToCart}
+                  product={item.node}
+                />
               </View>
             )}
           />

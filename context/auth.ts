@@ -12,8 +12,8 @@ const LOGOUT = 'LOGOUT';
 export interface AuthAction {
   type: typeof LOGIN | typeof LOGOUT;
   data: {
-    token: string;
-    expiresAt: string;
+    token: string | null;
+    expiresAt: string | null;
   };
 }
 
@@ -42,4 +42,12 @@ export const loginAction = (
   expiresAt: string
 ) => {
   dispatch({ type: LOGIN, data: { token, expiresAt } });
+};
+
+export const logoutAction = (
+  dispatch: Dispatch<ActionTypes>,
+  token = null,
+  expiresAt = null
+) => {
+  dispatch({ type: LOGOUT, data: { token, expiresAt } });
 };

@@ -5,18 +5,22 @@ import {
   Text,
   TouchableHighlight,
   StyleSheet,
+  ScrollView,
   Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { gql } from '@apollo/client';
 import { client } from '../../../client';
 import theme from '../../../theme';
-import { CartItem } from '../../../src/types';
+import { CartItem as CartItemType } from '../../../src/types';
+import CartItem from './CartItem';
 
 const screenHeight = Dimensions.get('window').height;
 
 type Props = {
-  cart: CartItem[];
+  cart: CartItemType[];
+  setCart: React.Dispatch<React.SetStateAction<CartItemType[]>>;
+  removeItemFromCart: (item: CartItemType) => void;
   event_name: string;
   event_date: string;
   event_handle: string;
@@ -25,6 +29,8 @@ type Props = {
 
 const Cart = ({
   cart,
+  setCart,
+  removeItemFromCart,
   event_name,
   event_date,
   event_handle,
@@ -32,7 +38,7 @@ const Cart = ({
 }: Props) => {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
 
-  const handleBuyNow = async () => {
+  const handleCheckout = async () => {
     try {
       const { data } = await client.mutate({
         mutation: CREATE_CHECKOUT,
@@ -41,6 +47,7 @@ const Cart = ({
             lineItems: cart.map((item: any) => ({
               variantId: item.variantId,
               quantity: item.quantity,
+              customAttributes: item.customAttributes,
             })),
             customAttributes: [
               {
@@ -76,7 +83,7 @@ const Cart = ({
         pathname: '/checkout',
         params: { webUrl: data.checkoutCreate.checkout.webUrl },
       });
-      // clear cart
+      setCart([]);
     } catch (error) {
       console.error(error);
       setBottomSheetVisible(false);
@@ -108,15 +115,25 @@ const Cart = ({
             <Text style={styles.modalText}>
               Your cart for {event_name} {event_date}:
             </Text>
-            {cart.map((item: any) => (
-              <Text key={item.variantId}>
-                {item.title} x {item.quantity}
-              </Text>
-            ))}
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerText}>Product</Text>
+              <Text style={styles.headerText}>Total</Text>
+            </View>
+            <ScrollView>
+              {cart.map((item: CartItemType) => (
+                <CartItem
+                  removeItemFromCart={removeItemFromCart}
+                  key={`${item.variantId}${JSON.stringify(
+                    item.customAttributes
+                  )}`}
+                  item={item}
+                />
+              ))}
+            </ScrollView>
             <TouchableHighlight
               style={styles.closeButton}
               onPress={() => {
-                handleBuyNow();
+                handleCheckout();
               }}
             >
               <Text style={styles.textStyle}>Checkout</Text>
@@ -128,6 +145,15 @@ const Cart = ({
               }}
             >
               <Text style={styles.textStyle}>Continue Shopping</Text>
+            </TouchableHighlight>
+            <TouchableHighlight
+              style={styles.closeButton}
+              onPress={() => {
+                setBottomSheetVisible(false);
+                setCart([]);
+              }}
+            >
+              <Text style={styles.textStyle}>Clear cart</Text>
             </TouchableHighlight>
           </View>
         </View>
@@ -167,6 +193,19 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.lightgold,
     padding: 10,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  headerText: {
+    textTransform: 'uppercase',
+    fontFamily: 'regular',
+    fontSize: 10,
+    marginBottom: 5,
+  },
   openCartButton: {
     color: 'white',
     fontFamily: 'regular',
@@ -197,7 +236,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   modalText: {
-    textAlign: 'center',
+    textAlign: 'left',
+    fontFamily: 'title',
     marginBottom: 15,
   },
 });

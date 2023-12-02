@@ -56,7 +56,13 @@ export default function HomeLayout() {
         <SafeAreaProvider>
           <Container onLayout={onLayoutRootView} style={styles.safeArea}>
             <StatusBar barStyle='light-content' />
-            <Slot />
+            {state.auth.token === null ? (
+              <View style={styles.container}>
+                <Slot />
+              </View>
+            ) : (
+              <Slot />
+            )}
           </Container>
         </SafeAreaProvider>
       </AppContext.Provider>

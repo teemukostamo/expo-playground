@@ -1,12 +1,14 @@
 import { useContext, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { AppContext } from '../../../context/main';
 import { gql, useQuery } from '@apollo/client';
 import { client } from '../../../client';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { logoutAction } from '../../../context/auth';
+import { deleteItemAsync } from '../../../src/utils/SecureStorageUtil';
 
 export default function Page() {
-  const { state } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
   const { loading, error, data, refetch } = useQuery(GET_USER, {
     variables: {
       customerAccessToken: state.auth.token,
@@ -18,6 +20,15 @@ export default function Page() {
   useEffect(() => {
     refetch(); // This will refetch the query every time the component renders
   }, [refetch]);
+
+  const handleLogout = async () => {
+    logoutAction(dispatch, null, null);
+    await deleteItemAsync('token');
+    await deleteItemAsync('expiresAt');
+    await deleteItemAsync('email');
+    await deleteItemAsync('password');
+    router.replace('/');
+  };
 
   if (loading)
     return (
@@ -47,6 +58,11 @@ export default function Page() {
           </View>
         )}
       />
+      <View>
+        <Pressable onPress={handleLogout}>
+          <Text style={styles.text}>Logout</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -54,7 +70,8 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
   },
   text: {
     color: 'white',

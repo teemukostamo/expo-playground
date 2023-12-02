@@ -9,6 +9,8 @@ import EventCard from './EventCard';
 import PickupLocations from './PickupLocations';
 import ProductListing from './ProductListing';
 import Cart from './Cart';
+import { variantExists, removeCartItem } from '../../../src/utils/cartUtils';
+import type { CustomAttribute } from '../../../src/types';
 
 interface CartItem {
   variantId: string; // Unique identifier for the item, often the product variant ID
@@ -17,12 +19,14 @@ interface CartItem {
   price: number; // Price of the item
   quantity: number; // Quantity of this item in the cart
   imageSrc?: string; // URL of the item's image
+  customAttributes: CustomAttribute[]; // Custom attributes associated with the item
   // Add any other relevant fields, like size, color, etc.
 }
 
 export default function Page() {
   const [selectedPickupLocation, setSelectedPickupLocation] =
     useState<string>('');
+  const [selectedPickupTime, setSelectedPickupTime] = useState<string>('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const local = useLocalSearchParams();
   const { loading, error, data } = useQuery(GET_COLLECTION, {
@@ -67,8 +71,26 @@ export default function Page() {
   }, [cart]);
 
   const addToCart = (product: CartItem) => {
-    setCart([...cart, product]);
+    if (variantExists(cart, product)) {
+      const updatedCart = cart.map((item) => {
+        // include custom attributes in comparison
+        if (item.variantId === product.variantId) {
+          return {
+            ...item,
+            quantity: item.quantity + 1,
+          };
+        } else {
+          return item;
+        }
+      });
+      setCart(updatedCart);
+    } else {
+      setCart([...cart, product]);
+    }
   };
+
+  const removeItemFromCart = (item: CartItem) =>
+    setCart(removeCartItem(cart, item));
 
   if (loading)
     return (
@@ -98,6 +120,8 @@ export default function Page() {
       {cart && cart.length > 0 ? (
         <Cart
           cart={cart}
+          setCart={setCart}
+          removeItemFromCart={removeItemFromCart}
           event_handle={collectionByHandle.handle}
           event_date={collectionByHandle.event_date.value}
           event_name={collectionByHandle.event_name.value}
@@ -150,6 +174,18 @@ export const GET_COLLECTION = gql`
             pickup_location_filter: metafield(
               namespace: "custom"
               key: "pickup_location_filter"
+            ) {
+              value
+            }
+            pickup_location_selection: metafield(
+              namespace: "custom"
+              key: "pickup_location_selection"
+            ) {
+              value
+            }
+            pickup_time_selection: metafield(
+              namespace: "custom"
+              key: "pickup_time_selection"
             ) {
               value
             }

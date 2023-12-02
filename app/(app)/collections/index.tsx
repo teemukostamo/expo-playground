@@ -1,5 +1,4 @@
 import { Text, FlatList, View, Button, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
 import { useQuery, gql } from '@apollo/client';
 
 import CollectionCard from './CollectionCard';
@@ -26,7 +25,6 @@ export default function Page() {
     <View style={styles.container}>
       <FlatList
         data={data.collections.edges}
-        numColumns={2}
         keyExtractor={({ node }) => node.id.toString()}
         renderItem={({ item }) => <CollectionCard collection={item.node} />}
       />
@@ -53,6 +51,18 @@ export const GET_ALL_COLLECTIONS = gql`
           image {
             src
             altText
+          }
+          venue_name: metafield(namespace: "custom", key: "venue_name") {
+            value
+          }
+          city: metafield(namespace: "custom", key: "city") {
+            value
+          }
+          event_name: metafield(namespace: "custom", key: "event_name") {
+            value
+          }
+          event_date: metafield(namespace: "custom", key: "event_date") {
+            value
           }
         }
       }
