@@ -27,7 +27,7 @@ export default function Footer() {
   return (
     <View style={styles.footer}>
       <FooterIcon icon='calendar' text='My Events' href='/my-events' />
-      <FooterIcon icon='search' text='Find Events' href='/search' />
+      <FooterIcon icon='search' text='Find Events' href='/collections' />
       <FooterIcon icon='user-circle' text='Profile' href='/user' />
     </View>
   );

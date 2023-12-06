@@ -21,7 +21,7 @@ export const GET_ORDERS = gql`
       firstName
       lastName
       email
-      orders(first: 10, reverse: true) {
+      orders(first: 50, reverse: true) {
         edges {
           node {
             id

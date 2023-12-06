@@ -9,14 +9,14 @@ import {
   Image,
 } from 'react-native';
 import type { CartItem } from '../../../src/types';
-import { parseProductAttributeOptions } from '../../../src/utils/cartUtils';
 import theme from '../../../theme';
+import ProductVariants from './ProductVariants';
 
 type Props = {
-  addToCart: (product: CartItem) => void;
-  pickupLocation: string;
+  addToCart: (product: Omit<CartItem, 'customAttributes'>) => void;
   product: {
     title: string;
+    id: string;
     description: string;
     variants: any;
     images: any;
@@ -26,19 +26,28 @@ type Props = {
     pickup_time_selection: {
       value: string;
     };
+    priceRange: {
+      minVariantPrice: {
+        amount: string;
+        currencyCode: string;
+      };
+    };
   };
 };
 
 const screenHeight = Dimensions.get('window').height;
 
-export default function ProductModal({
-  product,
-  addToCart,
-  pickupLocation,
-}: Props) {
+export default function ProductModal({ product, addToCart }: Props) {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-
-  const pickupOptions = JSON.parse(product.pickup_location_selection.value);
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    product.variants.edges[0].node.id
+  );
+  const [selectedVariantPrice, setSelectedVariantPrice] = useState(
+    product.variants.edges[0].node.price
+  );
+  const hasOnlyDefaultVariant =
+    product.variants.edges.length === 1 &&
+    product.variants.edges[0].node.title === 'Default Title';
 
   return product ? (
     <View style={styles.container}>
@@ -52,6 +61,10 @@ export default function ProductModal({
         )}
 
         <Text style={styles.productTitle}>{product.title}</Text>
+        <Text style={styles.productTitle}>
+          {product.priceRange.minVariantPrice.amount}
+          {product.priceRange.minVariantPrice.currencyCode}
+        </Text>
       </View>
       <View style={styles.ctaContainer}>
         <TouchableHighlight
@@ -73,8 +86,42 @@ export default function ProductModal({
         >
           <View style={styles.bottomSheetWrapper}>
             <View style={styles.bottomSheet}>
-              <Text style={styles.modalText}>{product.title}</Text>
-              <Text style={styles.modalText}>{product.description}</Text>
+              <Image
+                source={{ uri: product.images.edges[0].node.src }}
+                style={styles.image}
+                resizeMode='contain'
+              />
+              <Text style={styles.modalProductTitle}>{product.title}</Text>
+              <Text style={styles.modalProductDescription}>
+                {product.description}
+              </Text>
+              {!hasOnlyDefaultVariant && (
+                <ProductVariants
+                  selectedVariantId={selectedVariantId}
+                  initialSelectedOptions={
+                    product.variants.edges[0].node.selectedOptions
+                  }
+                  setSelectedVariantId={setSelectedVariantId}
+                  productId={product.id}
+                  initialPrice={product.variants.edges[0].node.price}
+                  setSelectedVariantPrice={setSelectedVariantPrice}
+                />
+              )}
+              <TouchableHighlight
+                style={styles.openButton}
+                onPress={() => {
+                  addToCart({
+                    variantId: selectedVariantId,
+                    quantity: 1,
+                    title: product.title,
+                    price: Number(selectedVariantPrice.amount),
+                    imageSrc: product.images.edges[0].node.src,
+                  });
+                  setBottomSheetVisible(false);
+                }}
+              >
+                <Text style={styles.textStyle}>Add to cart</Text>
+              </TouchableHighlight>
               <TouchableHighlight
                 style={styles.closeButton}
                 onPress={() => {
@@ -86,46 +133,6 @@ export default function ProductModal({
             </View>
           </View>
         </Modal>
-        <TouchableHighlight
-          style={styles.openButton}
-          onPress={() => {
-            addToCart({
-              variantId: product.variants.edges[0].node.id,
-              quantity: 1,
-              title: product.title,
-              price: 10,
-              imageSrc: product.images.edges[0].node.src,
-              customAttributes: [
-                {
-                  key: 'pickup_location_selection',
-                  value: parseProductAttributeOptions(
-                    pickupOptions.find((o: string) =>
-                      o.includes(pickupLocation)
-                    )
-                  ).humanReadable,
-                },
-                {
-                  key: '_integration_pickup_location',
-                  value: parseProductAttributeOptions(
-                    pickupOptions.find((o: string) =>
-                      o.includes(pickupLocation)
-                    )
-                  ).integration,
-                },
-                {
-                  key: 'pickup_time_selection',
-                  value: 'Pre-game',
-                },
-                {
-                  key: '_integration_pickup_time',
-                  value: '0',
-                },
-              ],
-            });
-          }}
-        >
-          <Text style={styles.textStyle}>Add to cart</Text>
-        </TouchableHighlight>
       </View>
     </View>
   ) : null;
@@ -136,17 +143,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 10,
+    backgroundColor: '#f3f3f3',
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    marginHorizontal: 10,
     marginBottom: 20,
   },
   detailsContainer: {
     flex: 1,
     flexDirection: 'row',
     width: '100%',
-    backgroundColor: 'white',
-    padding: 10,
-    margin: 5,
+    margin: 10,
   },
   ctaContainer: {
     flex: 1,
@@ -155,8 +162,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 40,
   },
   openButton: {
     backgroundColor: theme.colors.darkgold,
@@ -168,16 +175,15 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'title',
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 16,
     letterSpacing: 1,
     marginLeft: 10,
   },
   textStyle: {
     color: 'black',
-    fontWeight: 'bold',
     fontFamily: 'regular',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 12,
   },
   bottomSheetWrapper: {
     flex: 1,
@@ -186,7 +192,7 @@ const styles = StyleSheet.create({
   bottomSheet: {
     backgroundColor: 'white',
     padding: 16,
-    height: screenHeight * 0.4, // Example height for bottom sheet
+    height: screenHeight * 0.95, // Example height for bottom sheet
     borderWidth: 1,
     borderColor: 'lightgrey',
     borderTopLeftRadius: 20,
@@ -200,8 +206,16 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginTop: 10,
   },
-  modalText: {
+  modalProductTitle: {
     textAlign: 'center',
+    fontFamily: 'title',
+    fontSize: 28,
     marginBottom: 15,
+  },
+  modalProductDescription: {
+    textAlign: 'center',
+    fontFamily: 'regular',
+    marginBottom: 15,
+    fontSize: 16,
   },
 });

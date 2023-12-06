@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -22,11 +21,17 @@ import CartCustomAttributes from './CartCustomAttributes';
 
 type Props = {
   item: CartItemType;
+  incrementItemInCart: (item: CartItemType) => void;
+  decrementItemInCart: (item: CartItemType) => void;
   removeItemFromCart: (item: CartItemType) => void;
 };
 
-const CartItem = ({ item, removeItemFromCart }: Props) => {
-  const [quantity, setQuantity] = useState(1);
+const CartItem = ({
+  item,
+  removeItemFromCart,
+  incrementItemInCart,
+  decrementItemInCart,
+}: Props) => {
   const opacity = useSharedValue(1);
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -41,33 +46,29 @@ const CartItem = ({ item, removeItemFromCart }: Props) => {
     });
   };
 
-  const increaseQuantity = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
-  };
-
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1);
-    }
-  };
-
   return (
     <Animated.View style={[styles.container, animatedStyles]}>
       <Image source={{ uri: item.imageSrc }} style={styles.image} />
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.variantTitle}>{item.variantTitle}</Text>
+        <Text style={styles.title}>
+          €{(item.quantity * item.price).toFixed(2)}
+        </Text>
+        {item.variantTitle && (
+          <Text style={styles.variantTitle}>{item.variantTitle}</Text>
+        )}
         <CartCustomAttributes customAttributes={item.customAttributes} />
         <View style={styles.quantityContainer}>
           <TouchableOpacity
-            onPress={decreaseQuantity}
+            onPress={() => decrementItemInCart(item)}
             style={styles.quantityButton}
+            disabled={item.quantity === 1}
           >
             <Text>-</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>{item.quantity}</Text>
           <TouchableOpacity
-            onPress={increaseQuantity}
+            onPress={() => incrementItemInCart(item)}
             style={styles.quantityButton}
           >
             <Text>+</Text>

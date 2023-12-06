@@ -2,6 +2,10 @@ import { Slot, Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import theme from '../../theme';
 
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
+
 const Layout = () => {
   return (
     <View style={styles.container}>

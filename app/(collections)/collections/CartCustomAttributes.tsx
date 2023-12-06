@@ -6,18 +6,26 @@ type Props = {
   customAttributes: CustomAttribute[];
 };
 
+const attributeNames: {
+  [key: string]: string;
+} = {
+  pickup_location_selection: 'Pickup Location',
+  pickup_time_selection: 'Pickup Time',
+};
+
 const CartCustomAttributes = ({ customAttributes }: Props) => {
-  return (
+  return customAttributes ? (
     <View style={styles.attributesContainer}>
       {customAttributes
         .filter((attr) => !attr.key.startsWith('_'))
-        .map((attr, index) => (
-          <Text key={index} style={styles.attributeText}>
-            {`${attr.key}: ${attr.value}`}
-          </Text>
+        .map((attr) => (
+          <View key={attr.key}>
+            <Text style={styles.attributeKey}>{attributeNames[attr.key]}:</Text>
+            <Text style={styles.attributeValue}>{attr.value}</Text>
+          </View>
         ))}
     </View>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -25,10 +33,18 @@ const styles = StyleSheet.create({
     // Styling for the container
     marginVertical: 5,
   },
-  attributeText: {
+  attributeContainer: {
+    flexDirection: 'column',
+  },
+  attributeKey: {
     // Styling for the attribute text
     fontSize: 14,
     color: 'gray',
+  },
+  attributeValue: {
+    // Styling for the attribute text
+    fontSize: 14,
+    color: 'black',
   },
 });
 

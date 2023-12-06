@@ -1,33 +1,33 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 import { useQuery, gql } from '@apollo/client';
 import { client } from '../../../client';
 import { storeData, getData } from '../../../src/utils/AsyncStorageUtil';
 import EventCard from './EventCard';
-import PickupLocations from './PickupLocations';
 import ProductListing from './ProductListing';
 import Cart from './Cart';
-import { variantExists, removeCartItem } from '../../../src/utils/cartUtils';
-import type { CustomAttribute } from '../../../src/types';
+import {
+  variantExists,
+  removeCartItem,
+  areCustomAttributesEqual,
+} from '../../../src/utils/cartUtils';
+import PickupOptions from './PickupOptions';
 
-interface CartItem {
-  variantId: string; // Unique identifier for the item, often the product variant ID
-  title: string; // Title of the product
-  variantTitle?: string; // Title of the variant, if applicable
-  price: number; // Price of the item
-  quantity: number; // Quantity of this item in the cart
-  imageSrc?: string; // URL of the item's image
-  customAttributes: CustomAttribute[]; // Custom attributes associated with the item
-  // Add any other relevant fields, like size, color, etc.
-}
+import type { CartItem } from '../../../src/types';
+
+type PickupOptionType = {
+  integration: string;
+  humanReadable: string;
+} | null;
 
 export default function Page() {
+  const [cart, setCart] = useState<CartItem[] | null>(null);
   const [selectedPickupLocation, setSelectedPickupLocation] =
-    useState<string>('');
-  const [selectedPickupTime, setSelectedPickupTime] = useState<string>('');
-  const [cart, setCart] = useState<CartItem[]>([]);
+    useState<PickupOptionType>(null);
+  const [selectedPickupTime, setSelectedPickupTime] =
+    useState<PickupOptionType>(null);
   const local = useLocalSearchParams();
   const { loading, error, data } = useQuery(GET_COLLECTION, {
     variables: { handle: local.handle },
@@ -46,6 +46,16 @@ export default function Page() {
           const storedCart = await getData(local.handle);
           if (storedCart && storedCart.length > 0) {
             setCart(storedCart);
+            setSelectedPickupLocation({
+              integration: storedCart[0].customAttributes[1].value,
+              humanReadable: storedCart[0].customAttributes[0].value,
+            });
+            setSelectedPickupTime({
+              integration: storedCart[0].customAttributes[3].value,
+              humanReadable: storedCart[0].customAttributes[2].value,
+            });
+          } else {
+            setCart([]);
           }
         } catch (error) {
           console.error('error getting cart', error);
@@ -65,32 +75,99 @@ export default function Page() {
       }
     };
 
-    if (local.handle && typeof local.handle === 'string') {
+    if (local.handle && typeof local.handle === 'string' && cart) {
       storeCart(local.handle, cart);
     }
   }, [cart]);
 
-  const addToCart = (product: CartItem) => {
-    if (variantExists(cart, product)) {
-      const updatedCart = cart.map((item) => {
-        // include custom attributes in comparison
-        if (item.variantId === product.variantId) {
+  const addToCart = (product: Omit<CartItem, 'customAttributes'>) => {
+    if (cart && selectedPickupLocation && selectedPickupTime) {
+      const productToAdd = {
+        ...product,
+        customAttributes: [
+          {
+            key: 'pickup_location_selection',
+            value: selectedPickupLocation?.humanReadable,
+          },
+          {
+            key: '_integration_pickup_location',
+            value: selectedPickupLocation?.integration,
+          },
+          {
+            key: 'pickup_time_selection',
+            value: selectedPickupTime?.humanReadable,
+          },
+          {
+            key: '_integration_pickup_time',
+            value: selectedPickupTime?.integration,
+          },
+        ],
+      };
+      if (variantExists(cart, productToAdd)) {
+        const updatedCart = cart.map((item) => {
+          // include custom attributes in comparison
+          if (item.variantId === product.variantId) {
+            return {
+              ...item,
+              quantity: item.quantity + 1,
+            };
+          } else {
+            return item;
+          }
+        });
+        setCart(updatedCart);
+      } else {
+        setCart([...cart, productToAdd]);
+      }
+    }
+  };
+
+  const incrementItemInCart = (item: CartItem) => {
+    if (cart) {
+      const updatedCart = cart.map((cartItem) => {
+        if (
+          cartItem.variantId === item.variantId &&
+          areCustomAttributesEqual(
+            cartItem.customAttributes,
+            item.customAttributes
+          )
+        ) {
           return {
-            ...item,
-            quantity: item.quantity + 1,
+            ...cartItem,
+            quantity: cartItem.quantity + 1,
           };
         } else {
-          return item;
+          return cartItem;
         }
       });
       setCart(updatedCart);
-    } else {
-      setCart([...cart, product]);
+    }
+  };
+
+  const decrementItemInCart = (item: CartItem) => {
+    if (cart) {
+      const updatedCart = cart.map((cartItem) => {
+        if (
+          cartItem.variantId === item.variantId &&
+          areCustomAttributesEqual(
+            cartItem.customAttributes,
+            item.customAttributes
+          )
+        ) {
+          return {
+            ...cartItem,
+            quantity: cartItem.quantity - 1,
+          };
+        } else {
+          return cartItem;
+        }
+      });
+      setCart(updatedCart);
     }
   };
 
   const removeItemFromCart = (item: CartItem) =>
-    setCart(removeCartItem(cart, item));
+    cart && setCart(removeCartItem(cart, item));
 
   if (loading)
     return (
@@ -107,18 +184,34 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <EventCard collection={data.collectionByHandle} />
-      <PickupLocations
-        locationIds={JSON.parse(data.collectionByHandle.pickup_locations.value)}
-        setSelectedPickupLocation={setSelectedPickupLocation}
-        selectedPickupLocation={selectedPickupLocation}
-      />
-      <ProductListing
-        pickupLocation={selectedPickupLocation}
-        products={data.collectionByHandle.products.edges}
-        addToCart={addToCart}
-      />
-      {cart && cart.length > 0 ? (
+      {cart && (
+        <PickupOptions
+          initialModalVisible={cart.length === 0}
+          setSelectedPickupTime={setSelectedPickupTime}
+          setSelectedPickupLocation={setSelectedPickupLocation}
+          selectedPickupLocation={selectedPickupLocation}
+          selectedPickupTime={selectedPickupTime}
+          locationids={JSON.parse(
+            data.collectionByHandle.pickup_locations.value
+          )}
+          timeOptions={JSON.parse(data.collectionByHandle.pickup_times.value)}
+        />
+      )}
+
+      {selectedPickupLocation !== null && selectedPickupTime !== null ? (
+        <ProductListing
+          products={filterProducts(
+            collectionByHandle.products.edges,
+            selectedPickupLocation.integration,
+            selectedPickupTime.integration
+          )}
+          addToCart={addToCart}
+        />
+      ) : null}
+      {cart !== null && cart.length > 0 ? (
         <Cart
+          incrementItemInCart={incrementItemInCart}
+          decrementItemInCart={decrementItemInCart}
           cart={cart}
           setCart={setCart}
           removeItemFromCart={removeItemFromCart}
@@ -130,6 +223,28 @@ export default function Page() {
       ) : null}
     </View>
   );
+}
+
+function filterProducts(
+  products: any,
+  pickupLocation: string,
+  pickupTime: string
+) {
+  return products.filter((product: any) => {
+    // Check if the product's pickup_location includes the specified location
+    const locationMatch =
+      product.node.pickup_location_filter.value.includes(pickupLocation);
+
+    // Parse pickup times and check if the specified time is included
+    const timeMatch = JSON.parse(product.node.pickup_time_selection.value).some(
+      (timeString: string) => {
+        const [_, timeValue] = timeString.split('|').map((part) => part.trim());
+        return timeValue === pickupTime;
+      }
+    );
+
+    return locationMatch && timeMatch;
+  });
 }
 
 const styles = StyleSheet.create({
@@ -149,6 +264,9 @@ export const GET_COLLECTION = gql`
         namespace: "custom"
         key: "pickup_locations"
       ) {
+        value
+      }
+      pickup_times: metafield(namespace: "custom", key: "pickup_times") {
         value
       }
       image {
@@ -171,6 +289,7 @@ export const GET_COLLECTION = gql`
             description
             title
             handle
+            productType
             pickup_location_filter: metafield(
               namespace: "custom"
               key: "pickup_location_filter"
@@ -194,6 +313,14 @@ export const GET_COLLECTION = gql`
                 node {
                   id
                   title
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  price {
+                    amount
+                    currencyCode
+                  }
                 }
               }
             }

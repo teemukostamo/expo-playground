@@ -38,7 +38,22 @@ export function removeCartItem(cart: CartItem[], itemToRemove: CartItem) {
   });
 }
 
-function areCustomAttributesEqual(
+export function findCartItem(
+  cart: CartItem[],
+  itemToFind: CartItem
+): CartItem | undefined {
+  return cart.find((cartItem) => {
+    return (
+      cartItem.variantId === itemToFind.variantId &&
+      areCustomAttributesEqual(
+        cartItem.customAttributes,
+        itemToFind.customAttributes
+      )
+    );
+  });
+}
+
+export function areCustomAttributesEqual(
   attributes1: CustomAttribute[],
   attributes2: CustomAttribute[]
 ) {

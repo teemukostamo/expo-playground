@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { AppContext } from '../../../context/main';
 import { gql, useQuery } from '@apollo/client';
 import { client } from '../../../client';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { logoutAction } from '../../../context/auth';
 import { deleteItemAsync } from '../../../src/utils/SecureStorageUtil';
 

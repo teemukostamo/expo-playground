@@ -14,13 +14,16 @@ import { client } from '../../../client';
 import theme from '../../../theme';
 import { CartItem as CartItemType } from '../../../src/types';
 import CartItem from './CartItem';
+import Subtotal from './Subtotal';
 
 const screenHeight = Dimensions.get('window').height;
 
 type Props = {
   cart: CartItemType[];
-  setCart: React.Dispatch<React.SetStateAction<CartItemType[]>>;
+  setCart: React.Dispatch<React.SetStateAction<CartItemType[] | null>>;
   removeItemFromCart: (item: CartItemType) => void;
+  incrementItemInCart: (item: CartItemType) => void;
+  decrementItemInCart: (item: CartItemType) => void;
   event_name: string;
   event_date: string;
   event_handle: string;
@@ -31,6 +34,8 @@ const Cart = ({
   cart,
   setCart,
   removeItemFromCart,
+  incrementItemInCart,
+  decrementItemInCart,
   event_name,
   event_date,
   event_handle,
@@ -122,6 +127,8 @@ const Cart = ({
             <ScrollView>
               {cart.map((item: CartItemType) => (
                 <CartItem
+                  incrementItemInCart={incrementItemInCart}
+                  decrementItemInCart={decrementItemInCart}
                   removeItemFromCart={removeItemFromCart}
                   key={`${item.variantId}${JSON.stringify(
                     item.customAttributes
@@ -130,6 +137,7 @@ const Cart = ({
                 />
               ))}
             </ScrollView>
+            <Subtotal cart={cart} />
             <TouchableHighlight
               style={styles.closeButton}
               onPress={() => {
