@@ -48,13 +48,11 @@ export default function HomeLayout() {
     return null;
   }
 
-  const Container = Platform.OS === 'ios' ? SafeAreaView : View;
-
   return (
     <>
       <AppContext.Provider value={{ state, dispatch }}>
         <SafeAreaProvider>
-          <Container onLayout={onLayoutRootView} style={styles.safeArea}>
+          <SafeAreaView onLayout={onLayoutRootView} style={styles.safeArea}>
             <StatusBar barStyle='light-content' />
             {state.auth.token === null ? (
               <View style={styles.container}>
@@ -63,7 +61,7 @@ export default function HomeLayout() {
             ) : (
               <Slot />
             )}
-          </Container>
+          </SafeAreaView>
         </SafeAreaProvider>
       </AppContext.Provider>
     </>

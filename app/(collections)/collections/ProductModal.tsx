@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import type { CartItem } from '../../../src/types';
 import theme from '../../../theme';
@@ -45,6 +46,7 @@ export default function ProductModal({ product, addToCart }: Props) {
   const [selectedVariantPrice, setSelectedVariantPrice] = useState(
     product.variants.edges[0].node.price
   );
+  const [quantity, setQuantity] = useState(1);
   const hasOnlyDefaultVariant =
     product.variants.edges.length === 1 &&
     product.variants.edges[0].node.title === 'Default Title';
@@ -88,14 +90,20 @@ export default function ProductModal({ product, addToCart }: Props) {
             <View style={styles.bottomSheet}>
               <Image
                 source={{ uri: product.images.edges[0].node.src }}
-                style={styles.image}
+                style={styles.modalImage}
                 resizeMode='contain'
               />
               <Text style={styles.modalProductTitle}>{product.title}</Text>
               <Text style={styles.modalProductDescription}>
                 {product.description}
               </Text>
-              {!hasOnlyDefaultVariant && (
+              {hasOnlyDefaultVariant ? (
+                <View style={styles.quantityContainer}>
+                  <Text>
+                    Price: {Number(selectedVariantPrice.amount).toFixed(2)}€
+                  </Text>
+                </View>
+              ) : (
                 <ProductVariants
                   selectedVariantId={selectedVariantId}
                   initialSelectedOptions={
@@ -107,12 +115,29 @@ export default function ProductModal({ product, addToCart }: Props) {
                   setSelectedVariantPrice={setSelectedVariantPrice}
                 />
               )}
+              <View style={styles.quantityContainer}>
+                <Text style={{ marginRight: 10 }}>Quantity:</Text>
+                <TouchableOpacity
+                  onPress={() => setQuantity(quantity - 1)}
+                  style={styles.quantityButton}
+                  disabled={quantity === 1}
+                >
+                  <Text>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantity}>{quantity}</Text>
+                <TouchableOpacity
+                  onPress={() => setQuantity(quantity + 1)}
+                  style={styles.quantityButton}
+                >
+                  <Text>+</Text>
+                </TouchableOpacity>
+              </View>
               <TouchableHighlight
-                style={styles.openButton}
+                style={styles.closeButton}
                 onPress={() => {
                   addToCart({
                     variantId: selectedVariantId,
-                    quantity: 1,
+                    quantity,
                     title: product.title,
                     price: Number(selectedVariantPrice.amount),
                     imageSrc: product.images.edges[0].node.src,
@@ -163,7 +188,12 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 50,
-    height: 40,
+    height: 50,
+  },
+  modalImage: {
+    width: 120,
+    height: 120,
+    alignSelf: 'center',
   },
   openButton: {
     backgroundColor: theme.colors.darkgold,
@@ -217,5 +247,22 @@ const styles = StyleSheet.create({
     fontFamily: 'regular',
     marginBottom: 15,
     fontSize: 16,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  quantityButton: {
+    padding: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    width: 30,
+    alignItems: 'center',
+  },
+  quantity: {
+    marginHorizontal: 10,
   },
 });

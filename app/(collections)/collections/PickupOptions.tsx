@@ -1,7 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { client } from '../../../client';
+import theme from '../../../theme';
 
 type PickupOptionType = {
   integration: string;
@@ -45,38 +46,32 @@ const PickupOptions = ({
       setSelectedPickupLocation({ integration, humanReadable });
       setStep(step + 1);
     }
-    // Call the selection handler from the parent component if needed
-    // onSelection();
   };
 
   return (
     <>
-      <View>
-        {selectedPickupLocation && selectedPickupTime && (
-          <>
-            <Text>
-              Showing products for {selectedPickupLocation.humanReadable},
-              {selectedPickupTime.humanReadable}
-            </Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                setModalVisible(true);
-                setStep(1);
-              }}
-            >
-              <Text>Change selection</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+      {selectedPickupLocation && selectedPickupTime && (
+        <View style={styles.selectedOptionsContainer}>
+          <Text style={{ color: 'white' }}>
+            Showing products for {selectedPickupLocation.humanReadable},{' '}
+            {selectedPickupTime.humanReadable}
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setModalVisible(true);
+              setStep(1);
+            }}
+          >
+            <Text style={styles.buttonText}>Change selection</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <Modal visible={modalVisible} animationType='slide' transparent={false}>
         <View style={styles.container}>
           {step === 1 && (
             <View>
-              <Text style={styles.text}>
-                Welcome to this page. Please make a selection.
-              </Text>
+              <Text style={styles.text}>Please select a pickup location:</Text>
               {data.nodes.map((node: any) => {
                 const data = JSON.parse(node.fields[0].value);
                 return (
@@ -85,7 +80,7 @@ const PickupOptions = ({
                       style={styles.button}
                       onPress={() => handleOptionSelect(data.id, data.name)}
                     >
-                      <Text>{data.name}</Text>
+                      <Text style={styles.buttonText}>{data.name}</Text>
                     </TouchableOpacity>
                   </View>
                 );
@@ -94,7 +89,7 @@ const PickupOptions = ({
           )}
           {step === 2 && (
             <View>
-              <Text style={styles.text}>Please make another selection.</Text>
+              <Text style={styles.text}>Please select a pickup time:</Text>
 
               {timeOptions.map((option: string) => {
                 const optionData = parsePipeSeparatedString(option);
@@ -106,7 +101,7 @@ const PickupOptions = ({
                         handleOptionSelect(optionData.key, optionData.value)
                       }
                     >
-                      <Text>{optionData.value}</Text>
+                      <Text style={styles.buttonText}>{optionData.value}</Text>
                     </TouchableOpacity>
                   </View>
                 );
@@ -150,13 +145,28 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   text: {
-    fontSize: 18,
+    fontSize: 14,
     marginBottom: 20,
+    fontFamily: 'regular',
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: theme.colors.darkgold,
     padding: 10,
     borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontFamily: 'regular',
+  },
+  selectedOptionsContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    marginBottom: 10,
   },
 });
 

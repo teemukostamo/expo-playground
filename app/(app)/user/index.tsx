@@ -5,6 +5,7 @@ import { gql, useQuery } from '@apollo/client';
 import { client } from '../../../client';
 import { router } from 'expo-router';
 import { logoutAction } from '../../../context/auth';
+import { clearAsyncStorage } from '../../../src/utils/AsyncStorageUtil';
 import { deleteItemAsync } from '../../../src/utils/SecureStorageUtil';
 
 export default function Page() {
@@ -27,6 +28,7 @@ export default function Page() {
     await deleteItemAsync('expiresAt');
     await deleteItemAsync('email');
     await deleteItemAsync('password');
+    await clearAsyncStorage();
     router.replace('/');
   };
 

@@ -1,7 +1,7 @@
 import { StyleSheet, StatusBar, View } from 'react-native';
 import { Slot } from 'expo-router';
-import Header from './Header';
-import Footer from './Footer';
+import Header from '../../src/components/layout/Header';
+import Footer from '../../src/components/layout/Footer';
 import { useReducer, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
