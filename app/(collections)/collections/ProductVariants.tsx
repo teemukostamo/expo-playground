@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { client } from '../../../client';
 
 import theme from '../../../theme';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 type SelectedOptions = {
   name: string;
@@ -79,9 +80,7 @@ const ProductVariants = ({
   if (!productId || typeof productId !== 'string') {
     return null;
   }
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
+  if (loading) return <LoadingIndicator />;
   if (error) {
     return <Text>Error! {error.message}</Text>;
   }

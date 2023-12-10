@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useQuery, gql } from '@apollo/client';
@@ -16,6 +16,7 @@ import {
 import PickupOptions from './PickupOptions';
 
 import type { CartItem } from '../../../src/types';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 type PickupOptionType = {
   integration: string;
@@ -169,12 +170,7 @@ export default function Page() {
   const removeItemFromCart = (item: CartItem) =>
     cart && setCart(removeCartItem(cart, item));
 
-  if (loading)
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (loading) return <LoadingIndicator />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   if (!data) return <Text>No collection found.</Text>;
@@ -183,6 +179,7 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
+      {Platform.OS === 'ios' ? null : <View style={{ height: 25 }} />}
       <EventCard collection={data.collectionByHandle} />
       {cart && (
         <PickupOptions

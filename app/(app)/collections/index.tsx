@@ -4,6 +4,7 @@ import { useQuery, gql } from '@apollo/client';
 import CollectionCard from './CollectionCard';
 import { client } from '../../../client';
 import theme from '../../../theme';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 export default function Page() {
   const { loading, error, data } = useQuery(GET_ALL_COLLECTIONS, {
@@ -11,12 +12,7 @@ export default function Page() {
     client: client,
   });
 
-  if (loading)
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (loading) return <LoadingIndicator />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   if (!data) return <Text>No collections found.</Text>;

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { client } from '../../../client';
 import theme from '../../../theme';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 type PickupOptionType = {
   integration: string;
@@ -35,7 +36,7 @@ const PickupOptions = ({
     client: client,
   });
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading) return <LoadingIndicator />;
   if (error) return <Text>Error</Text>;
 
   const handleOptionSelect = (integration: string, humanReadable: string) => {

@@ -23,18 +23,18 @@ const CollectionCard = ({ collection }: any) => {
           resizeMode='cover'
         >
           <View style={styles.overlay}>
-            {/* <Text style={styles.location}>
+            <Text style={styles.location}>
               {collection.venue_name.value}, {collection.city.value}
-            </Text> */}
+            </Text>
           </View>
         </ImageBackground>
         <View style={styles.eventContainer}>
           <View style={styles.eventTextContainer}>
             <Text style={styles.eventName}>{collection.event_name.value}</Text>
             <Text style={styles.eventDate}>{collection.event_date.value}</Text>
-            <Text style={styles.eventDate}>
+            {/* <Text style={styles.eventDate}>
               {collection.venue_name.value}, {collection.city.value}
-            </Text>
+            </Text> */}
           </View>
         </View>
       </View>
@@ -60,6 +60,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25, // Adjust the opacity for a more or less pronounced shadow
     shadowRadius: 3.84, // Blur radius of the shadow
     elevation: 5,
+    borderRadius: 4,
+    overflow: 'hidden',
   },
   backgroundImage: {
     flex: 1,
@@ -68,13 +70,14 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     height: 160,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust the alpha value for opacity
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Adjust the alpha value for opacity
   },
   location: {
     color: theme.colors.lightgold,
-    backgroundColor: theme.colors.black,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     fontFamily: 'regular',
-    fontSize: 16,
+    textAlign: 'center',
+    fontSize: 14,
     fontWeight: 'bold',
     paddingHorizontal: 10, // Optional: for padding around the text
     paddingVertical: 5,
@@ -96,8 +99,9 @@ const styles = StyleSheet.create({
   },
   eventName: {
     color: theme.colors.lightgold,
+    letterSpacing: 1,
     fontFamily: 'title',
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   eventDate: {

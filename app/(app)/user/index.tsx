@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { logoutAction } from '../../../context/auth';
 import { clearAsyncStorage } from '../../../src/utils/AsyncStorageUtil';
 import { deleteItemAsync } from '../../../src/utils/SecureStorageUtil';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 export default function Page() {
   const { state, dispatch } = useContext(AppContext);
@@ -32,13 +33,7 @@ export default function Page() {
     router.replace('/');
   };
 
-  if (loading)
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Loading...</Text>
-      </View>
-    );
-
+  if (loading) return <LoadingIndicator />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   if (!data) return <Text>User not found</Text>;
@@ -49,17 +44,6 @@ export default function Page() {
         Welcome to Linecut {firstName} {lastName}
       </Text>
       <Text style={styles.text}>Your email: {email}</Text>
-      <FlatList
-        data={orders.edges}
-        keyExtractor={({ node }) => node.id.toString()}
-        renderItem={({ item }) => (
-          <View>
-            <Text style={styles.text}>
-              Order: {item.node.name} processedAt {item.node.processedAt}
-            </Text>
-          </View>
-        )}
-      />
       <View>
         <Pressable onPress={handleLogout}>
           <Text style={styles.text}>Logout</Text>
@@ -72,7 +56,6 @@ export default function Page() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
     flexDirection: 'column',
   },
   text: {
@@ -86,29 +69,6 @@ export const GET_USER = gql`
       firstName
       lastName
       email
-      orders(first: 10, reverse: true) {
-        edges {
-          node {
-            id
-            name
-            orderNumber
-            processedAt
-            totalPriceV2 {
-              amount
-              currencyCode
-            }
-            lineItems(first: 5) {
-              # This will get up to 5 items per order
-              edges {
-                node {
-                  title
-                  quantity
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
 `;

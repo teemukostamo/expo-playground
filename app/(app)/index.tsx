@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { AppContext } from '../../context/main';
 import Login from './Login';
 import { Link } from 'expo-router';
+import theme from '../../theme';
 
 export default function Page() {
   const { state } = useContext(AppContext);
@@ -22,16 +23,7 @@ export default function Page() {
   } else {
     return (
       <View style={styles.container}>
-        <Text>Welcome to linecut screen</Text>
-        <Link href='/testing'>testing link</Link>
-        <Animated.View
-          style={{
-            height: 100,
-            width,
-            backgroundColor: 'violet',
-          }}
-        />
-        <Button onPress={handlePress} title='Click me' />
+        <Text style={styles.text}>SKIP THE LINE</Text>
       </View>
     );
   }
@@ -41,5 +33,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+  },
+  text: {
+    fontFamily: 'title',
+    fontSize: 30,
+    color: theme.colors.lightgold,
   },
 });

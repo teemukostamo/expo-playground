@@ -1,4 +1,4 @@
-import { Slot, Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import theme from '../../theme';
 

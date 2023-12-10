@@ -6,11 +6,14 @@ import {
   StyleSheet,
   Pressable,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import { AppContext } from '../../../context/main';
 import { client } from '../../../client';
 import { sortOrdersByEventDate } from '../../../src/utils/orderUtils';
 import theme from '../../../theme';
+import OrderCard from './OrderCard';
+import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 export default function Page() {
   const [toggleOrders, setToggleOrders] = useState('upcoming');
@@ -27,13 +30,7 @@ export default function Page() {
     refetch(); // This will refetch the query every time the component renders
   }, [refetch]);
 
-  if (loading)
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size='large' color={theme.colors.lightgold} />
-        <Text style={styles.text}>Loading...</Text>
-      </View>
-    );
+  if (loading) return <LoadingIndicator />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const { orders } = data.customer;
@@ -65,43 +62,19 @@ export default function Page() {
       </View>
       {toggleOrders === 'upcoming' ? (
         <View style={styles.eventsContainer}>
-          {sortedOrders.upcoming.map((order) => {
-            const { customAttributes } = order.node;
-            const eventDate = customAttributes.find(
-              (attr) => attr.key === '_event_date'
-            )?.value;
-            const eventName = customAttributes.find(
-              (attr) => attr.key === '_event_name'
-            )?.value;
-            return (
-              <View key={order.node.id}>
-                <Text style={styles.text} key={order.node.id}>
-                  {eventDate} {eventName}
-                </Text>
-              </View>
-            );
-          })}
+          <FlatList
+            data={sortedOrders.upcoming}
+            keyExtractor={({ node }) => node.id.toString()}
+            renderItem={({ item }) => <OrderCard order={item.node} />}
+          />
         </View>
       ) : (
         <View style={styles.eventsContainer}>
-          <View style={styles.eventsContainer}>
-            {sortedOrders.past.map((order) => {
-              const { customAttributes } = order.node;
-              const eventDate = customAttributes.find(
-                (attr: { key: string }) => attr.key === '_event_date'
-              )?.value;
-              const eventName = customAttributes.find(
-                (attr: { key: string }) => attr.key === '_event_name'
-              )?.value;
-              return (
-                <View key={order.node.id}>
-                  <Text style={styles.text}>
-                    {eventDate} {eventName}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
+          <FlatList
+            data={sortedOrders.past}
+            keyExtractor={({ node }) => node.id.toString()}
+            renderItem={({ item }) => <OrderCard order={item.node} />}
+          />
         </View>
       )}
     </View>
@@ -137,9 +110,6 @@ const styles = StyleSheet.create({
 export const GET_ORDERS = gql`
   query getCustomerOrders($customerAccessToken: String!) {
     customer(customerAccessToken: $customerAccessToken) {
-      firstName
-      lastName
-      email
       orders(first: 50, reverse: true) {
         edges {
           node {
@@ -149,17 +119,27 @@ export const GET_ORDERS = gql`
               key
               value
             }
-            orderNumber
             processedAt
             totalPriceV2 {
               amount
               currencyCode
             }
-            lineItems(first: 10) {
+            lineItems(first: 100) {
               edges {
                 node {
+                  variant {
+                    id
+                  }
                   title
-                  quantity
+                  currentQuantity
+                  customAttributes {
+                    key
+                    value
+                  }
+                  discountedTotalPrice {
+                    amount
+                    currencyCode
+                  }
                 }
               }
             }

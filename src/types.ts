@@ -31,6 +31,18 @@ export interface CustomerOrdersQuery {
   };
 }
 
+export interface LineItemNode {
+  title: string;
+  variant: {
+    id: string;
+  };
+  currentQuantity: number;
+  customAttributes: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
 export interface OrderNode {
   id: string;
   name: string;
@@ -46,10 +58,7 @@ export interface OrderNode {
   };
   lineItems: {
     edges: Array<{
-      node: {
-        title: string;
-        quantity: number;
-      };
+      node: LineItemNode;
     }>;
   };
 }
