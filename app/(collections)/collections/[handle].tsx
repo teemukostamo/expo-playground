@@ -188,8 +188,8 @@ export default function Page() {
           setSelectedPickupLocation={setSelectedPickupLocation}
           selectedPickupLocation={selectedPickupLocation}
           selectedPickupTime={selectedPickupTime}
-          locationids={JSON.parse(
-            data.collectionByHandle.pickup_locations.value
+          pickupOptions={JSON.parse(
+            data.collectionByHandle.pickup_options.value
           )}
           timeOptions={JSON.parse(data.collectionByHandle.pickup_times.value)}
         />
@@ -264,6 +264,9 @@ export const GET_COLLECTION = gql`
         value
       }
       pickup_times: metafield(namespace: "custom", key: "pickup_times") {
+        value
+      }
+      pickup_options: metafield(namespace: "custom", key: "pickup_options") {
         value
       }
       image {

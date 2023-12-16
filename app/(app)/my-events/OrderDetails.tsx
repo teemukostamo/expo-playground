@@ -34,7 +34,6 @@ const OrderDetails = ({
   eventDate,
   orderIdentifier,
 }: Props) => {
-  console.log('order at orderDetails', order);
   return (
     <Modal
       animationType='slide'

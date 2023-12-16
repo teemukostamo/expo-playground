@@ -72,3 +72,21 @@ export interface SortedOrders {
   past: Order[];
   upcoming: Order[];
 }
+
+export interface PickupTime {
+  name: string;
+  integration_name: string;
+  end_sales_time: string; // formatted as date-time
+}
+
+export interface PickupLocation {
+  name: string;
+  integration_name: string;
+  description: string;
+  img_src: string; // formatted as URI
+}
+
+export interface PickupOptions {
+  pickup_times: PickupTime[];
+  pickup_locations: PickupLocation[];
+}

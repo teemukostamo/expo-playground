@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { client } from '../../../client';
 import theme from '../../../theme';
+import {
+  PickupOptions as PickupOptionsType,
+  PickupLocation,
+} from '../../../src/types';
 import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
 
 type PickupOptionType = {
@@ -15,8 +19,8 @@ type Props = {
   setSelectedPickupLocation: (selection: PickupOptionType) => void;
   selectedPickupTime: PickupOptionType | null;
   selectedPickupLocation: PickupOptionType | null;
-  locationids: string[];
   timeOptions: string[];
+  pickupOptions: PickupOptionsType;
   initialModalVisible: boolean;
 };
 
@@ -25,19 +29,12 @@ const PickupOptions = ({
   setSelectedPickupLocation,
   selectedPickupLocation,
   selectedPickupTime,
-  locationids,
+  pickupOptions,
   timeOptions,
   initialModalVisible,
 }: Props) => {
   const [step, setStep] = useState(1);
   const [modalVisible, setModalVisible] = useState(initialModalVisible);
-  const { loading, error, data } = useQuery(GET_PICKUP_LOCATIONS, {
-    variables: { ids: locationids },
-    client: client,
-  });
-
-  if (loading) return <LoadingIndicator />;
-  if (error) return <Text>Error</Text>;
 
   const handleOptionSelect = (integration: string, humanReadable: string) => {
     if (step === 2) {
@@ -73,19 +70,25 @@ const PickupOptions = ({
           {step === 1 && (
             <View>
               <Text style={styles.text}>Please select a pickup location:</Text>
-              {data.nodes.map((node: any) => {
-                const data = JSON.parse(node.fields[0].value);
-                return (
-                  <View key={data.id}>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={() => handleOptionSelect(data.id, data.name)}
-                    >
-                      <Text style={styles.buttonText}>{data.name}</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
+              {pickupOptions.pickup_locations.map(
+                (location: PickupLocation) => {
+                  return (
+                    <View key={location.integration_name}>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() =>
+                          handleOptionSelect(
+                            location.integration_name,
+                            location.name
+                          )
+                        }
+                      >
+                        <Text style={styles.buttonText}>{location.name}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }
+              )}
             </View>
           )}
           {step === 2 && (
@@ -122,21 +125,6 @@ function parsePipeSeparatedString(str: string) {
     value: parts[0],
   };
 }
-
-const GET_PICKUP_LOCATIONS = gql`
-  query pickupLocations($ids: [ID!]!) {
-    nodes(ids: $ids) {
-      ... on Metaobject {
-        id
-        fields {
-          key
-          type
-          value
-        }
-      }
-    }
-  }
-`;
 
 const styles = StyleSheet.create({
   container: {
