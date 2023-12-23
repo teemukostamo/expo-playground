@@ -1,11 +1,13 @@
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import theme from '../../../theme';
+import { View, Text, StyleSheet } from 'react-native';
 
-const LoadingIndicator = () => {
+type Props = {
+  error: string;
+};
+
+const LoadingIndicator = ({ error }: Props) => {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size='large' color={theme.colors.lightgold} />
-      <Text style={styles.text}>Loading...</Text>
+      <Text style={styles.text}>Error: {error}</Text>
     </View>
   );
 };

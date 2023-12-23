@@ -17,7 +17,10 @@ export interface AuthAction {
   };
 }
 
-export const authReducer = (state: Auth, action: AuthAction) => {
+export const isAuthAction = (action: ActionTypes): action is AuthAction =>
+  action.type === 'LOGIN' || action.type === 'LOGOUT';
+
+export const authReducer = (state: Auth, action: AuthAction): Auth => {
   switch (action.type) {
     case LOGIN:
       return {

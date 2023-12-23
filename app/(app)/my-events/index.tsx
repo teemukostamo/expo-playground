@@ -1,19 +1,14 @@
 import { gql, useQuery } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ActivityIndicator,
-  FlatList,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { AppContext } from '../../../context/main';
 import { client } from '../../../client';
 import { sortOrdersByEventDate } from '../../../src/utils/orderUtils';
-import theme from '../../../theme';
 import OrderCard from './OrderCard';
 import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+import Error from '../../../src/components/layout/Error';
+
+import theme from '../../../theme';
 
 export default function Page() {
   const [toggleOrders, setToggleOrders] = useState('upcoming');
@@ -31,7 +26,7 @@ export default function Page() {
   }, [refetch]);
 
   if (loading) return <LoadingIndicator />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return <Error error={error.message} />;
 
   const { orders } = data.customer;
   const sortedOrders = sortOrdersByEventDate(orders);
@@ -120,7 +115,11 @@ export const GET_ORDERS = gql`
               value
             }
             processedAt
-            totalPriceV2 {
+            totalPrice {
+              amount
+              currencyCode
+            }
+            totalTax {
               amount
               currencyCode
             }

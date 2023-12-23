@@ -1,0 +1,14 @@
+{
+  "hello": "Moi",
+  "user": {
+    "welcomeTo": "Tervetuloa",
+    "yourEmail": "Sähköpostisi",
+    "logout": "Kirjaudu ulos",
+    "changeLanguage": "Vaihda kieli"
+  },
+  "footer": {
+    "myEvents": "Tapahtumani",
+    "findEvents": "Hae tapahtumia",
+    "profile": "Profiili"
+  }
+}

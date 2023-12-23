@@ -1,10 +1,14 @@
 import { createContext, Dispatch } from 'react';
 
 import type { Auth, AuthAction } from './auth';
-import { authReducer } from './auth';
+import { authReducer, isAuthAction } from './auth';
+
+import type { Locale, LocaleAction } from './locale';
+import { localeReducer, isLocaleAction } from './locale';
 
 type InitialStateType = {
   auth: Auth;
+  locale: Locale;
 };
 
 export const initialState = {
@@ -12,15 +16,19 @@ export const initialState = {
     token: null,
     expiresAt: null,
   },
+  locale: {
+    lang: 'en',
+  },
 };
 
-export type ActionTypes = AuthAction;
+export type ActionTypes = AuthAction | LocaleAction;
 
 export const mainReducer = (
-  { auth }: InitialStateType,
+  { auth, locale }: InitialStateType,
   action: ActionTypes
-) => ({
-  auth: authReducer(auth, action),
+): InitialStateType => ({
+  auth: isAuthAction(action) ? authReducer(auth, action) : auth,
+  locale: isLocaleAction(action) ? localeReducer(locale, action) : locale,
 });
 
 export const AppContext = createContext<{
@@ -28,5 +36,5 @@ export const AppContext = createContext<{
   dispatch: Dispatch<ActionTypes>;
 }>({
   state: initialState,
-  dispatch: ({}) => null,
+  dispatch: ({}) => {},
 });

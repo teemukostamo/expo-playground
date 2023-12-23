@@ -1,15 +1,18 @@
 import { useContext, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { AppContext } from '../../../context/main';
 import { gql, useQuery } from '@apollo/client';
 import { client } from '../../../client';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { logoutAction } from '../../../context/auth';
 import { clearAsyncStorage } from '../../../src/utils/AsyncStorageUtil';
 import { deleteItemAsync } from '../../../src/utils/SecureStorageUtil';
 import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+import Error from '../../../src/components/layout/Error';
+import i18n from '../../../src/i18n';
 
 export default function Page() {
+  const { t } = i18n;
   const { state, dispatch } = useContext(AppContext);
   const { loading, error, data, refetch } = useQuery(GET_USER, {
     variables: {
@@ -34,19 +37,24 @@ export default function Page() {
   };
 
   if (loading) return <LoadingIndicator />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return <Error error={error.message} />;
 
   if (!data) return <Text>User not found</Text>;
-  const { firstName, lastName, email, orders } = data.customer;
+  const { firstName, lastName, email } = data.customer;
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
-        Welcome to Linecut {firstName} {lastName}
+        {i18n.t('user.welcomeTo')} {firstName} {lastName}
       </Text>
-      <Text style={styles.text}>Your email: {email}</Text>
+      <Text style={styles.text}>
+        {i18n.t('user.yourEmail')}: {email}
+      </Text>
+      <Link style={styles.text} href='/change-language'>
+        {i18n.t('user.changeLanguage')}
+      </Link>
       <View>
         <Pressable onPress={handleLogout}>
-          <Text style={styles.text}>Logout</Text>
+          <Text style={styles.text}>{i18n.t('user.logout')}</Text>
         </Pressable>
       </View>
     </View>

@@ -6,10 +6,8 @@ import {
   Button,
   ActivityIndicator,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { WebView } from 'react-native-webview';
-
-import { useLocalSearchParams } from 'expo-router';
 
 export default function Checkout() {
   const { webUrl } = useLocalSearchParams();

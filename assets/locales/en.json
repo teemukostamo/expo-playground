@@ -1,0 +1,17 @@
+{
+  "hello": "Hello",
+  "layout": {
+    "details": "Details"
+  },
+  "user": {
+    "welcomeTo": "Welcome to",
+    "yourEmail": "Your email",
+    "logout": "Logout",
+    "changeLanguage": "Change language"
+  },
+  "footer": {
+    "myEvents": "My Events",
+    "findEvents": "Find Events",
+    "profile": "Profile"
+  }
+}

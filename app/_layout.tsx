@@ -1,19 +1,17 @@
-import {
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  View,
-  Platform,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, StatusBar, View } from 'react-native';
 import { Slot } from 'expo-router';
 import { useReducer, useCallback, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { getLocales } from 'expo-localization';
 
 import { AppContext, initialState, mainReducer } from '../context/main';
 import { loginAction } from '../context/auth';
+import { setLanguageAction } from '../context/locale';
 import { getValueFor } from '../src/utils/SecureStorageUtil';
+import { storeData, getData } from '../src/utils/AsyncStorageUtil';
+import { AVAILABLE_LANGUAGES } from '../src/constants';
 import theme from '../theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -29,10 +27,21 @@ export default function HomeLayout() {
     const bootstrapAsync = async () => {
       const token = await getValueFor('token');
       const expiresAt = await getValueFor('expiresAt');
-
       if (token && expiresAt) {
         loginAction(dispatch, token, expiresAt);
       }
+      console.log('bootstrapAsync runs');
+      // const lang = await getData('lang');
+      // if (lang) {
+      //   setLanguageAction(dispatch, lang);
+      // } else {
+      //   let deviceLang = getLocales()[0].languageCode;
+      //   if (!AVAILABLE_LANGUAGES.includes(deviceLang)) {
+      //     deviceLang = 'en';
+      //   }
+      //   setLanguageAction(dispatch, deviceLang);
+      //   storeData('lang', deviceLang);
+      // }
     };
 
     bootstrapAsync();

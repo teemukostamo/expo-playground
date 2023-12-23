@@ -5,6 +5,7 @@ import CollectionCard from './CollectionCard';
 import { client } from '../../../client';
 import theme from '../../../theme';
 import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+import Error from '../../../src/components/layout/Error';
 
 export default function Page() {
   const { loading, error, data } = useQuery(GET_ALL_COLLECTIONS, {
@@ -13,7 +14,7 @@ export default function Page() {
   });
 
   if (loading) return <LoadingIndicator />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return <Error error={error.message} />;
 
   if (!data) return <Text>No collections found.</Text>;
 

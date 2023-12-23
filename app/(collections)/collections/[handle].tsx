@@ -17,6 +17,7 @@ import PickupOptions from './PickupOptions';
 
 import type { CartItem } from '../../../src/types';
 import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+import Error from '../../../src/components/layout/Error';
 
 type PickupOptionType = {
   integration: string;
@@ -171,7 +172,7 @@ export default function Page() {
     cart && setCart(removeCartItem(cart, item));
 
   if (loading) return <LoadingIndicator />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (error) return <Error error={error.message} />;
 
   if (!data) return <Text>No collection found.</Text>;
 

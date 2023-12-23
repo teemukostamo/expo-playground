@@ -64,7 +64,7 @@ export default function ProductModal({ product, addToCart }: Props) {
 
         <Text style={styles.productTitle}>{product.title}</Text>
         <Text style={styles.productTitle}>
-          {product.priceRange.minVariantPrice.amount}
+          {Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
           {product.priceRange.minVariantPrice.currencyCode}
         </Text>
       </View>
@@ -76,6 +76,22 @@ export default function ProductModal({ product, addToCart }: Props) {
           }}
         >
           <Text style={styles.textStyle}>Details</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={() => {
+            setBottomSheetVisible(true);
+          }}
+        >
+          <Text style={styles.textStyle}>Quantity</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={() => {
+            setBottomSheetVisible(true);
+          }}
+        >
+          <Text style={styles.textStyle}>Add to cart</Text>
         </TouchableHighlight>
 
         <Modal

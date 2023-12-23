@@ -12,6 +12,8 @@ import { OrderNode, LineItemNode } from '../../../src/types';
 import OrderLineItem from './OrderLineItem';
 import theme from '../../../theme';
 import VenueMap from './VenueMap';
+import { useState } from 'react';
+import OrderSubtotal from './OrderSubtotal';
 
 type Props = {
   order: OrderNode;
@@ -34,6 +36,8 @@ const OrderDetails = ({
   eventDate,
   orderIdentifier,
 }: Props) => {
+  const [toggleView, setToggleView] = useState('lineItems');
+
   return (
     <Modal
       animationType='slide'
@@ -57,22 +61,52 @@ const OrderDetails = ({
               <FontAwesome name='close' size={24} color='black' />
             </Pressable>
           </View>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Product</Text>
-            <Text style={styles.headerText}>Total</Text>
+          <View style={styles.toggleContainer}>
+            <Pressable onPress={() => setToggleView('lineItems')}>
+              <Text
+                style={[
+                  styles.text,
+                  toggleView === 'lineItems' && styles.selectedText,
+                ]}
+              >
+                Your Order
+              </Text>
+            </Pressable>
+            <Pressable onPress={() => setToggleView('pickupInstructions')}>
+              <Text
+                style={[
+                  styles.text,
+                  toggleView === 'pickupInstructions' && styles.selectedText,
+                ]}
+              >
+                Pickup instructions
+              </Text>
+            </Pressable>
           </View>
-          <ScrollView>
-            {order.lineItems.edges.map(
-              (item: { node: LineItemNode }, index: number) => (
-                <OrderLineItem
-                  node={item.node}
-                  key={`${item.node.variant.id}-${index}`}
-                />
-              )
-            )}
-          </ScrollView>
-          {/* <Subtotal cart={cart} /> */}
-          <VenueMap imageSrc={venueMap} />
+          {toggleView === 'lineItems' ? (
+            <View>
+              <View style={styles.headerContainer}>
+                <Text style={styles.headerText}>Product</Text>
+                <Text style={styles.headerText}>Total</Text>
+              </View>
+              <ScrollView style={styles.lineItemsContainer}>
+                {order.lineItems.edges.map(
+                  (item: { node: LineItemNode }, index: number) => (
+                    <OrderLineItem
+                      node={item.node}
+                      key={`${item.node.variant.id}-${index}`}
+                    />
+                  )
+                )}
+              </ScrollView>
+              <OrderSubtotal
+                totalPrice={order.totalPrice}
+                totalTax={order.totalTax}
+              />
+            </View>
+          ) : (
+            <VenueMap imageSrc={venueMap} />
+          )}
         </View>
       </View>
     </Modal>
@@ -85,6 +119,29 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightgold,
     padding: 10,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  eventsContainer: {
+    flex: 1,
+  },
+  text: {
+    fontFamily: 'regular',
+    fontSize: 16,
+    padding: 10,
+    color: 'black',
+  },
+  selectedText: {
+    fontSize: 16,
+    padding: 10,
+    color: theme.colors.lightgold,
+    borderBottomColor: 'white',
+  },
+  lineItemsContainer: {
+    maxHeight: 500,
   },
   eventDetailsContainer: {
     flexDirection: 'row',

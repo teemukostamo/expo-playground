@@ -21,7 +21,6 @@ export default VenueMap;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginTop: 20,
   },
   image: {
     width: 300,
@@ -30,6 +29,5 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'title',
     fontSize: 20,
-    marginTop: 20,
   },
 });

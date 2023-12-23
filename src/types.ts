@@ -41,6 +41,10 @@ export interface LineItemNode {
     key: string;
     value: string;
   }>;
+  discountedTotalPrice: {
+    amount: string;
+    currencyCode: string;
+  };
 }
 
 export interface OrderNode {
@@ -52,7 +56,11 @@ export interface OrderNode {
   }>;
   orderNumber: string;
   processedAt: string;
-  totalPriceV2: {
+  totalPrice: {
+    amount: string;
+    currencyCode: string;
+  };
+  totalTax: {
     amount: string;
     currencyCode: string;
   };
@@ -90,3 +98,8 @@ export interface PickupOptions {
   pickup_times: PickupTime[];
   pickup_locations: PickupLocation[];
 }
+
+export type Money = {
+  amount: string;
+  currencyCode: string;
+};
