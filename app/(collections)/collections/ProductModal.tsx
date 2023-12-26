@@ -9,9 +9,11 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import ProductVariants from './ProductVariants';
+import Quantity from './Quantity';
 import type { CartItem } from '../../../src/types';
 import theme from '../../../theme';
-import ProductVariants from './ProductVariants';
 
 type Props = {
   addToCart: (product: Omit<CartItem, 'customAttributes'>) => void;
@@ -61,7 +63,6 @@ export default function ProductModal({ product, addToCart }: Props) {
             resizeMode='contain'
           />
         )}
-
         <Text style={styles.productTitle}>{product.title}</Text>
         <Text style={styles.productTitle}>
           {Number(product.priceRange.minVariantPrice.amount).toFixed(2)}
@@ -75,23 +76,32 @@ export default function ProductModal({ product, addToCart }: Props) {
             setBottomSheetVisible(true);
           }}
         >
-          <Text style={styles.textStyle}>Details</Text>
+          <FontAwesome
+            name='info-circle'
+            size={16}
+            color={theme.colors.lightgold}
+          />
         </TouchableHighlight>
+        <Quantity quantity={quantity} setQuantity={setQuantity} />
         <TouchableHighlight
           style={styles.openButton}
           onPress={() => {
-            setBottomSheetVisible(true);
+            hasOnlyDefaultVariant
+              ? addToCart({
+                  variantId: selectedVariantId,
+                  quantity,
+                  title: product.title,
+                  price: Number(selectedVariantPrice.amount),
+                  imageSrc: product.images.edges[0].node.src,
+                })
+              : setBottomSheetVisible(true);
           }}
         >
-          <Text style={styles.textStyle}>Quantity</Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.openButton}
-          onPress={() => {
-            setBottomSheetVisible(true);
-          }}
-        >
-          <Text style={styles.textStyle}>Add to cart</Text>
+          <FontAwesome
+            name='cart-plus'
+            size={16}
+            color={theme.colors.lightgold}
+          />
         </TouchableHighlight>
 
         <Modal
@@ -104,15 +114,19 @@ export default function ProductModal({ product, addToCart }: Props) {
         >
           <View style={styles.bottomSheetWrapper}>
             <View style={styles.bottomSheet}>
-              <Image
-                source={{ uri: product.images.edges[0].node.src }}
-                style={styles.modalImage}
-                resizeMode='contain'
-              />
+              {product.images.edges.length > 0 && (
+                <Image
+                  source={{ uri: product.images.edges[0].node.src }}
+                  style={styles.modalImage}
+                  resizeMode='contain'
+                />
+              )}
+
               <Text style={styles.modalProductTitle}>{product.title}</Text>
               <Text style={styles.modalProductDescription}>
                 {product.description}
               </Text>
+              <Quantity quantity={quantity} setQuantity={setQuantity} />
               {hasOnlyDefaultVariant ? (
                 <View style={styles.quantityContainer}>
                   <Text>
@@ -131,23 +145,6 @@ export default function ProductModal({ product, addToCart }: Props) {
                   setSelectedVariantPrice={setSelectedVariantPrice}
                 />
               )}
-              <View style={styles.quantityContainer}>
-                <Text style={{ marginRight: 10 }}>Quantity:</Text>
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity - 1)}
-                  style={styles.quantityButton}
-                  disabled={quantity === 1}
-                >
-                  <Text>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantity}>{quantity}</Text>
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
-                  style={styles.quantityButton}
-                >
-                  <Text>+</Text>
-                </TouchableOpacity>
-              </View>
               <TouchableHighlight
                 style={styles.closeButton}
                 onPress={() => {
@@ -189,6 +186,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     marginHorizontal: 10,
     marginBottom: 20,
+    borderRadius: 4,
   },
   detailsContainer: {
     flex: 1,
@@ -212,8 +210,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   openButton: {
-    backgroundColor: theme.colors.darkgold,
-    borderRadius: 20,
+    backgroundColor: 'black',
+    borderRadius: 4,
     padding: 5,
     elevation: 2,
   },
@@ -226,10 +224,20 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   textStyle: {
-    color: 'black',
-    fontFamily: 'regular',
+    color: theme.colors.lightgold,
+    fontFamily: 'title',
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 14,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  addButtonText: {
+    color: theme.colors.lightgold,
+    fontFamily: 'title',
+    textAlign: 'center',
+    fontSize: 14,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   bottomSheetWrapper: {
     flex: 1,
@@ -245,7 +253,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   closeButton: {
-    backgroundColor: theme.colors.darkgold,
+    backgroundColor: 'black',
     color: 'white',
     borderRadius: 10,
     padding: 10,

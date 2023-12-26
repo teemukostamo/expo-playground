@@ -7,8 +7,8 @@
     "changeLanguage": "Vaihda kieli"
   },
   "footer": {
-    "myEvents": "Tapahtumani",
-    "findEvents": "Hae tapahtumia",
+    "myEvents": "Tapahtumat",
+    "findEvents": "Hae",
     "profile": "Profiili"
   }
 }

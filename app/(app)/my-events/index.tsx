@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
 export const GET_ORDERS = gql`
   query getCustomerOrders($customerAccessToken: String!) {
     customer(customerAccessToken: $customerAccessToken) {
-      orders(first: 50, reverse: true) {
+      orders(first: 100, reverse: true) {
         edges {
           node {
             id

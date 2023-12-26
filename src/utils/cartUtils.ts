@@ -64,3 +64,9 @@ export function areCustomAttributesEqual(
     return attr2 && attr1.value === attr2.value;
   });
 }
+
+export const getTotalItemsQuantity = (cart: CartItem[]) => {
+  return cart.reduce((total, item) => {
+    return total + item.quantity;
+  }, 0);
+};

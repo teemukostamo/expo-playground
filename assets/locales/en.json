@@ -10,8 +10,8 @@
     "changeLanguage": "Change language"
   },
   "footer": {
-    "myEvents": "My Events",
-    "findEvents": "Find Events",
+    "myEvents": "Events",
+    "findEvents": "Find",
     "profile": "Profile"
   }
 }

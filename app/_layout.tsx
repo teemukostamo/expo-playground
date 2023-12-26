@@ -30,18 +30,6 @@ export default function HomeLayout() {
       if (token && expiresAt) {
         loginAction(dispatch, token, expiresAt);
       }
-      console.log('bootstrapAsync runs');
-      // const lang = await getData('lang');
-      // if (lang) {
-      //   setLanguageAction(dispatch, lang);
-      // } else {
-      //   let deviceLang = getLocales()[0].languageCode;
-      //   if (!AVAILABLE_LANGUAGES.includes(deviceLang)) {
-      //     deviceLang = 'en';
-      //   }
-      //   setLanguageAction(dispatch, deviceLang);
-      //   storeData('lang', deviceLang);
-      // }
     };
 
     bootstrapAsync();

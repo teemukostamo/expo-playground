@@ -15,6 +15,7 @@ import theme from '../../../theme';
 import { CartItem as CartItemType } from '../../../src/types';
 import CartItem from './CartItem';
 import Subtotal from './Subtotal';
+import { getTotalItemsQuantity } from '../../../src/utils/cartUtils';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -104,7 +105,7 @@ const Cart = ({
         }}
       >
         <Text style={styles.openCartButton}>
-          View {cart.length} items in cart
+          View {getTotalItemsQuantity(cart)} items in cart
         </Text>
       </TouchableHighlight>
       <Modal

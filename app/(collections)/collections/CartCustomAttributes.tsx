@@ -38,12 +38,13 @@ const styles = StyleSheet.create({
   },
   attributeKey: {
     // Styling for the attribute text
-    fontSize: 14,
+    fontSize: 10,
     color: 'gray',
+    textTransform: 'uppercase',
   },
   attributeValue: {
     // Styling for the attribute text
-    fontSize: 14,
+    fontSize: 12,
     color: 'black',
   },
 });

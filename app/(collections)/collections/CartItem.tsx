@@ -50,10 +50,13 @@ const CartItem = ({
     <Animated.View style={[styles.container, animatedStyles]}>
       <Image source={{ uri: item.imageSrc }} style={styles.image} />
       <View style={styles.infoContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.title}>
-          €{(item.quantity * item.price).toFixed(2)}
-        </Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>
+            €{(item.quantity * item.price).toFixed(2)}
+          </Text>
+        </View>
+
         {item.variantTitle && (
           <Text style={styles.variantTitle}>{item.variantTitle}</Text>
         )}
@@ -95,6 +98,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   image: {
     width: 80,

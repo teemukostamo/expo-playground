@@ -18,7 +18,6 @@ export const changeLanguage = async (language: string) => {
 };
 
 const initLanguage = async (i18n: { locale: string }) => {
-  console.log('initLanguage runs');
   try {
     const savedLocale = await getData('lang');
     let deviceLang = getLocales()[0].languageCode;

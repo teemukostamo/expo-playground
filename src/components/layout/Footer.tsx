@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
-import { Link, usePathname } from 'expo-router';
+import { Link, router, usePathname } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
@@ -21,7 +21,6 @@ const FooterIcon = ({ text, icon, href }: FooterIconProps) => {
   const pathName = usePathname();
   const isActive = pathName.includes(href);
   const scale = useSharedValue(1);
-  const underlineWidth = useSharedValue(0);
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
@@ -30,27 +29,18 @@ const FooterIcon = ({ text, icon, href }: FooterIconProps) => {
 
   useEffect(() => {
     scale.value = withSpring(isActive ? 1.1 : 1);
-    underlineWidth.value = withSpring(isActive ? 100 : 0);
   }, [isActive]);
-
-  const animatedUnderlineStyle = useAnimatedStyle(() => {
-    return {
-      width: `${underlineWidth.value}%`, // Interpolate width
-      height: 1, // Underline thickness
-      backgroundColor: 'black', // Underline color
-      bottom: 4, // Align to bottom
-    };
-  });
 
   return (
     <View style={styles.iconContainer}>
-      <Link href={href}>
+      <TouchableOpacity onPress={() => router.push(href)}>
         <Animated.View style={[styles.iconContainer, animatedStyles]}>
           <FontAwesome name={icon} size={20} color='black' />
-          <Text style={styles.iconText}>{text}</Text>
-          <Animated.View style={[animatedUnderlineStyle]} />
+          <Text style={[styles.iconText, isActive && styles.activeIconText]}>
+            {text}
+          </Text>
         </Animated.View>
-      </Link>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -79,21 +69,26 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   footer: {
-    height: 55,
+    height: 50,
     backgroundColor: theme.colors.darkgold,
     flexDirection: 'row',
   },
   iconContainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    height: 55,
   },
   iconText: {
     fontFamily: 'regular',
     fontWeight: 'bold',
     fontSize: 12,
-    padding: 3,
+  },
+  activeIconText: {
+    backgroundColor: 'black',
+    color: theme.colors.lightgold,
+    marginTop: 2,
+    borderRadius: 4,
+    paddingHorizontal: 2,
   },
 });
