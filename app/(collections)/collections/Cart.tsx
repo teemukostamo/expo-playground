@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -8,6 +8,11 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { gql } from '@apollo/client';
 import { client } from '../../../client';
@@ -43,7 +48,18 @@ const Cart = ({
   venue_map_url,
 }: Props) => {
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
-
+  const scale = useSharedValue(1); // Initial scale is 1
+  useEffect(() => {
+    // Trigger the animation to grow and then shrink back
+    scale.value = withSpring(1.2, {}, () => {
+      scale.value = withSpring(1); // Shrink back to original size
+    });
+  }, [getTotalItemsQuantity(cart)]); // Depend on cart quantity
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
   const handleCheckout = async () => {
     try {
       const { data } = await client.mutate({
@@ -104,9 +120,9 @@ const Cart = ({
           setBottomSheetVisible(true);
         }}
       >
-        <Text style={styles.openCartButton}>
+        <Animated.Text style={[styles.openCartButton, animatedStyles]}>
           View {getTotalItemsQuantity(cart)} items in cart
-        </Text>
+        </Animated.Text>
       </TouchableHighlight>
       <Modal
         animationType='slide'
@@ -200,7 +216,14 @@ const CREATE_CHECKOUT = gql`
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightgold,
-    padding: 10,
+    // padding: 10,
+    marginHorizontal: 10,
+    borderRadius: 5,
+    shadowColor: '#000', // Shadow Color
+    shadowOffset: { width: 0, height: 2 }, // Shadow Offset
+    shadowOpacity: 0.25, // Shadow Opacity
+    shadowRadius: 3.84, // Shadow Radius
+    elevation: 5, // Elevation for Android
   },
   headerContainer: {
     flexDirection: 'row',
@@ -215,9 +238,18 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
   },
+  modalTriggerContainer: {
+    marginHorizontal: 10,
+    width: '80%',
+    backgroundColor: 'red',
+  },
   openCartButton: {
     color: 'white',
-    fontFamily: 'regular',
+    fontFamily: 'title',
+    textAlign: 'center', // Center the text
+    paddingVertical: 10, // Padding for top and bottom to make it look substantial
+    fontSize: 24, // Increase font size if needed
+    fontWeight: 'bold', // Optional: if you want the text to be bold
   },
   textStyle: {
     color: 'white',

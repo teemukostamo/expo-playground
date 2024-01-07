@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  TouchableOpacity,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import ProductVariants from './ProductVariants';
