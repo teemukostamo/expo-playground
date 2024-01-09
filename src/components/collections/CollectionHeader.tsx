@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import theme from '../../../theme';
 import { router } from 'expo-router';
 
-const EventCard = ({ collection }: any) => {
+const CollectionHeader = ({ collection }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.backButton}>
@@ -27,7 +27,7 @@ const EventCard = ({ collection }: any) => {
   );
 };
 
-export default EventCard;
+export default CollectionHeader;
 
 const styles = StyleSheet.create({
   container: {

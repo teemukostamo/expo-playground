@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import type { OrderNode } from '../../../src/types';
+import type { OrderNode } from '../../types';
 import { useState } from 'react';
 
 import OrderDetails from './OrderDetails';

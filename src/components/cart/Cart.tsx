@@ -15,12 +15,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { gql } from '@apollo/client';
-import { client } from '../../../client';
+import { client } from '../../graphql/client';
 import theme from '../../../theme';
-import { CartItem as CartItemType } from '../../../src/types';
+import { CartItem as CartItemType } from '../../types';
 import CartItem from './CartItem';
 import Subtotal from './Subtotal';
-import { getTotalItemsQuantity } from '../../../src/utils/cartUtils';
+import { getTotalItemsQuantity } from '../../utils/cartUtils';
 
 const screenHeight = Dimensions.get('window').height;
 

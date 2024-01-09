@@ -1,13 +1,10 @@
-import { gql, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { client } from '../../../client';
 import theme from '../../../theme';
 import {
   PickupOptions as PickupOptionsType,
   PickupLocation,
-} from '../../../src/types';
-import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+} from '../../types';
 
 type PickupOptionType = {
   integration: string;

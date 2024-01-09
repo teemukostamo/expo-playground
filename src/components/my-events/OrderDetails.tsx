@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { OrderNode, LineItemNode } from '../../../src/types';
+import { OrderNode, LineItemNode } from '../../types';
 import OrderLineItem from './OrderLineItem';
 import theme from '../../../theme';
 import VenueMap from './VenueMap';

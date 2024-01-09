@@ -5,12 +5,15 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, createTheme } from '@rneui/themed';
-import { Button, Icon } from '@rneui/base';
+// import { Button, Icon } from '@rneui/base';
+import { TamaguiProvider, Button } from 'tamagui';
+import OverlayMenu from '../src/components/layout/OverlayMenu';
 
-import { AppContext, initialState, mainReducer } from '../context/main';
-import { loginAction } from '../context/auth';
+import { AppContext, initialState, mainReducer } from '../src/context/main';
+import { loginAction } from '../src/context/auth';
 import { getValueFor } from '../src/utils/SecureStorageUtil';
 import theme from '../theme';
+import config from '../tamagui.config';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +22,8 @@ export default function HomeLayout() {
   const [fontsLoaded, fontError] = useFonts({
     regular: require('../assets/fonts/Montserrat-Regular.ttf'),
     title: require('../assets/fonts/BarlowCondensed-Bold.ttf'),
+    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
+    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   });
 
   useEffect(() => {
@@ -82,20 +87,24 @@ export default function HomeLayout() {
           mode: 'light',
         })}
       > */}
-      <AppContext.Provider value={{ state, dispatch }}>
-        <SafeAreaProvider>
-          <SafeAreaView onLayout={onLayoutRootView} style={styles.safeArea}>
-            <StatusBar barStyle='light-content' />
-            {state.auth.token === null ? (
-              <View style={styles.container}>
+      <TamaguiProvider config={config}>
+        <AppContext.Provider value={{ state, dispatch }}>
+          <SafeAreaProvider>
+            <SafeAreaView onLayout={onLayoutRootView} style={styles.safeArea}>
+              <StatusBar barStyle='light-content' />
+              {/* <OverlayMenu visible={true} /> */}
+
+              {state.auth.token === null ? (
+                <View style={styles.container}>
+                  <Slot />
+                </View>
+              ) : (
                 <Slot />
-              </View>
-            ) : (
-              <Slot />
-            )}
-          </SafeAreaView>
-        </SafeAreaProvider>
-      </AppContext.Provider>
+              )}
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </AppContext.Provider>
+      </TamaguiProvider>
       {/* </ThemeProvider> */}
     </>
   );

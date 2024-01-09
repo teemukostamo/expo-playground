@@ -11,7 +11,7 @@ import {
 import { FontAwesome } from '@expo/vector-icons';
 import ProductVariants from './ProductVariants';
 import Quantity from './Quantity';
-import type { CartItem } from '../../../src/types';
+import type { CartItem } from '../../types';
 import theme from '../../../theme';
 
 type Props = {

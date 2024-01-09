@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import type { CustomAttribute } from '../../../src/types';
+import type { CustomAttribute } from '../../types';
 
 type Props = {
   customAttributes: CustomAttribute[];

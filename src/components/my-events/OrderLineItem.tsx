@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-import { LineItemNode } from '../../../src/types';
-import CartCustomAttributes from '../../(collections)/collections/CartCustomAttributes';
+import { LineItemNode } from '../../types';
+import CartCustomAttributes from '../cart/CartCustomAttributes';
 
 type Props = {
   node: LineItemNode;

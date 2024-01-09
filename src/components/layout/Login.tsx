@@ -11,10 +11,10 @@ import {
 import { Link, router } from 'expo-router';
 
 import { save } from '../../utils/SecureStorageUtil';
-import { client } from '../../../client';
+import { client } from '../../graphql/client';
 import { gql } from '@apollo/client';
-import { AppContext } from '../../../context/main';
-import { loginAction } from '../../../context/auth';
+import { AppContext } from '../../context/main';
+import { loginAction } from '../../context/auth';
 
 import theme from '../../../theme';
 

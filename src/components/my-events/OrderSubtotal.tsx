@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import type { Money } from '../../../src/types';
+import type { Money } from '../../types';
 
 type Props = {
   totalPrice: Money;

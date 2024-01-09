@@ -1,6 +1,6 @@
 import { View, FlatList, StyleSheet } from 'react-native';
 import ProductModal from './ProductModal';
-import type { CartItem } from '../../../src/types';
+import type { CartItem } from '../../types';
 
 type Props = {
   pickupTime?: string;

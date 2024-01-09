@@ -5,8 +5,8 @@ import Footer from '../../src/components/layout/Footer';
 import { useReducer, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { initialState, mainReducer } from '../../context/main';
-import { loginAction } from '../../context/auth';
+import { initialState, mainReducer } from '../../src/context/main';
+import { loginAction } from '../../src/context/auth';
 import { getValueFor } from '../../src/utils/SecureStorageUtil';
 import theme from '../../theme';
 

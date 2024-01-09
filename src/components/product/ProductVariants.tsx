@@ -1,10 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { client } from '../../../client';
+import { client } from '../../graphql/client';
 
 import theme from '../../../theme';
-import LoadingIndicator from '../../../src/components/layout/LoadingIndicator';
+import LoadingIndicator from '../layout/LoadingIndicator';
 
 type SelectedOptions = {
   name: string;

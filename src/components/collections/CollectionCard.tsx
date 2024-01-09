@@ -6,7 +6,7 @@ import {
   ImageBackground,
   Pressable,
 } from 'react-native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import theme from '../../../theme';
 
 const CollectionCard = ({ collection }: any) => {
@@ -33,8 +33,8 @@ const CollectionCard = ({ collection }: any) => {
             <Text style={styles.eventName}>{collection.event_name.value}</Text>
             <Text style={styles.eventDate}>{collection.event_date.value}</Text>
             {/* <Text style={styles.eventDate}>
-              {collection.venue_name.value}, {collection.city.value}
-            </Text> */}
+                {collection.venue_name.value}, {collection.city.value}
+              </Text> */}
           </View>
         </View>
       </View>

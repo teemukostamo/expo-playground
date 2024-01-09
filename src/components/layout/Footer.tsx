@@ -1,7 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, router, usePathname } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { useMedia, useTheme, XStack, YStack } from 'tamagui'; // note: design system can use @tamagui/core
+
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -46,7 +48,10 @@ const FooterIcon = ({ text, icon, href }: FooterIconProps) => {
 };
 
 export default function Footer() {
-  return (
+  const theme = useTheme();
+  const media = useMedia();
+
+  return media.sm ? (
     <View style={styles.footer}>
       <FooterIcon
         icon='calendar'
@@ -64,6 +69,23 @@ export default function Footer() {
         href='/user'
       />
     </View>
+  ) : (
+    <XStack
+      width='100vw'
+      justifyContent='space-evenly'
+      flexWrap='wrap'
+      backgroundColor='$linecutDarkGold'
+      elevation={20}
+      hoverStyle={{
+        backgroundColor: 'red',
+      }}
+    >
+      <YStack width='$12' space='$12'>
+        <Text>Hello</Text>
+        <Text>World</Text>
+      </YStack>
+      <Text>World</Text>
+    </XStack>
   );
 }
 
@@ -72,6 +94,7 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: theme.colors.darkgold,
     flexDirection: 'row',
+    width: '100%',
   },
   iconContainer: {
     flex: 1,

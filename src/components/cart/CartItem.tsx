@@ -14,7 +14,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 
-import { CartItem as CartItemType } from '../../../src/types';
+import { CartItem as CartItemType } from '../../types';
 
 import theme from '../../../theme';
 import CartCustomAttributes from './CartCustomAttributes';

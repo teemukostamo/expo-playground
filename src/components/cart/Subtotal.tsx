@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-import type { CartItem } from '../../../src/types';
+import type { CartItem } from '../../types';
 
 const Subtotal = ({ cart }: { cart: CartItem[] }) => {
   const subtotal = cart.reduce((acc, item) => {
