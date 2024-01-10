@@ -10,7 +10,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { WebView } from 'react-native-webview';
 
 export default function Checkout() {
-  const { webUrl } = useLocalSearchParams();
+  const { webUrl, prevRoute } = useLocalSearchParams();
+  console.log(prevRoute);
 
   const handleNavigationChange = (navState: { url: string }) => {
     // Check the URL and determine if it's the thank you page
@@ -32,7 +33,10 @@ export default function Checkout() {
     );
   };
 
-  return webUrl && typeof webUrl === 'string' ? (
+  return prevRoute &&
+    typeof prevRoute === 'string' &&
+    webUrl &&
+    typeof webUrl === 'string' ? (
     <View style={styles.container}>
       <WebView
         originWhitelist={['*']}
@@ -48,12 +52,19 @@ export default function Checkout() {
         startInLoadingState={true}
         onNavigationStateChange={handleNavigationChange}
       />
-      <Button onPress={() => router.back()} title='Go back' />
+      <Button onPress={() => router.replace(prevRoute)} title='Go back' />
     </View>
   ) : (
     <View style={styles.flexContainer}>
       <Text>Checkout</Text>
-      <Button onPress={() => router.back()} title='Go back' />
+      <Button
+        onPress={() =>
+          router.replace(
+            prevRoute && typeof prevRoute === 'string' ? prevRoute : '/'
+          )
+        }
+        title='Go back'
+      />
     </View>
   );
 }

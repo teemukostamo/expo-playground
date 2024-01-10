@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -13,7 +13,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { gql } from '@apollo/client';
 import { client } from '../../graphql/client';
 import theme from '../../../theme';
@@ -21,6 +21,7 @@ import { CartItem as CartItemType } from '../../types';
 import CartItem from './CartItem';
 import Subtotal from './Subtotal';
 import { getTotalItemsQuantity } from '../../utils/cartUtils';
+import { AppContext } from '../../context/main';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -47,6 +48,8 @@ const Cart = ({
   event_handle,
   venue_map_url,
 }: Props) => {
+  const { state } = useContext(AppContext);
+  const path = usePathname();
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const scale = useSharedValue(1); // Initial scale is 1
   useEffect(() => {
@@ -62,16 +65,20 @@ const Cart = ({
   });
   const handleCheckout = async () => {
     try {
-      const { data } = await client.mutate({
-        mutation: CREATE_CHECKOUT,
+      const { data: cartData } = await client.mutate({
+        mutation: CREATE_CART,
         variables: {
           input: {
-            lineItems: cart.map((item: any) => ({
-              variantId: item.variantId,
+            buyerIdentity: {
+              countryCode: 'FI',
+              customerAccessToken: state.auth.token,
+            },
+            lines: cart.map((item: any) => ({
+              merchandiseId: item.variantId,
               quantity: item.quantity,
-              customAttributes: item.customAttributes,
+              attributes: item.customAttributes,
             })),
-            customAttributes: [
+            attributes: [
               {
                 key: 'order_identifier',
                 value: '1234',
@@ -103,7 +110,10 @@ const Cart = ({
       setBottomSheetVisible(false);
       router.push({
         pathname: '/checkout',
-        params: { webUrl: data.checkoutCreate.checkout.webUrl },
+        params: {
+          webUrl: cartData.cartCreate.cart.checkoutUrl,
+          prevRoute: path,
+        },
       });
       setCart([]);
     } catch (error) {
@@ -189,25 +199,17 @@ const Cart = ({
 
 export default Cart;
 
-const CREATE_CHECKOUT = gql`
-  mutation checkoutCreate($input: CheckoutCreateInput!) {
-    checkoutCreate(input: $input) {
-      checkout {
+const CREATE_CART = gql`
+  mutation cartCreate($input: CartInput) {
+    cartCreate(input: $input) {
+      cart {
+        checkoutUrl
         id
-        webUrl
-        lineItems(first: 5) {
-          edges {
-            node {
-              title
-              quantity
-            }
-          }
-        }
       }
-      checkoutUserErrors {
-        code
+      userErrors {
         field
         message
+        code
       }
     }
   }

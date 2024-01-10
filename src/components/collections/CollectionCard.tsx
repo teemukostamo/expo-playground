@@ -1,7 +1,6 @@
 import {
   View,
   StyleSheet,
-  Image,
   Text,
   ImageBackground,
   Pressable,

@@ -1,11 +1,20 @@
 import { Text, FlatList, View, Button, StyleSheet } from 'react-native';
 import { useQuery, gql } from '@apollo/client';
+import { parseISO, isToday, isFuture } from 'date-fns';
 
 import CollectionCard from '../../components/collections/CollectionCard';
 import { client } from '../../graphql/client';
 import theme from '../../../theme';
 import LoadingIndicator from '../../components/layout/LoadingIndicator';
 import Error from '../../components/layout/Error';
+
+function isTodayOrFuture(dateString: string) {
+  // Parse the date string into a Date object
+  const date = parseISO(dateString);
+
+  // Check if the date is either today or in the future
+  return isToday(date) || isFuture(date);
+}
 
 export default function Page() {
   const { loading, error, data } = useQuery(GET_ALL_COLLECTIONS, {
@@ -21,7 +30,10 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data.collections.edges}
+        data={data.collections.edges.filter(
+          (item: { node: { event_date: { value: string } } }) =>
+            isTodayOrFuture(item.node.event_date.value)
+        )}
         keyExtractor={({ node }) => node.id.toString()}
         renderItem={({ item }) => <CollectionCard collection={item.node} />}
       />

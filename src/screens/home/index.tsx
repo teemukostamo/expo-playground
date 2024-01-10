@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import { useContext } from 'react';
 import { AppContext } from '../../context/main';
 import Login from '../../components/layout/Login';
-import { Avatar, XStack, Text } from 'tamagui';
+import { Text } from 'tamagui';
 
 export default function Page() {
   const { state } = useContext(AppContext);

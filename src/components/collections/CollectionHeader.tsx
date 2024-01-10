@@ -13,7 +13,7 @@ const CollectionHeader = ({ collection }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.backButton}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.replace('/collections')}>
           <FontAwesome name='arrow-left' size={20} color='black' />
         </Pressable>
       </View>
