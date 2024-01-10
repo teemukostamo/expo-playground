@@ -20,7 +20,7 @@ export default VenueMap;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   image: {
     width: 300,

@@ -4,6 +4,7 @@ import theme from '../../../theme';
 import {
   PickupOptions as PickupOptionsType,
   PickupLocation,
+  PickupTime,
 } from '../../types';
 
 type PickupOptionType = {
@@ -16,7 +17,6 @@ type Props = {
   setSelectedPickupLocation: (selection: PickupOptionType) => void;
   selectedPickupTime: PickupOptionType | null;
   selectedPickupLocation: PickupOptionType | null;
-  timeOptions: string[];
   pickupOptions: PickupOptionsType;
   initialModalVisible: boolean;
 };
@@ -27,7 +27,6 @@ const PickupOptions = ({
   selectedPickupLocation,
   selectedPickupTime,
   pickupOptions,
-  timeOptions,
   initialModalVisible,
 }: Props) => {
   const [step, setStep] = useState(1);
@@ -91,18 +90,16 @@ const PickupOptions = ({
           {step === 2 && (
             <View>
               <Text style={styles.text}>Please select a pickup time:</Text>
-
-              {timeOptions.map((option: string) => {
-                const optionData = parsePipeSeparatedString(option);
+              {pickupOptions.pickup_times.map((time: PickupTime) => {
                 return (
-                  <View key={optionData.key}>
+                  <View key={time.integration_name}>
                     <TouchableOpacity
                       style={styles.button}
                       onPress={() =>
-                        handleOptionSelect(optionData.key, optionData.value)
+                        handleOptionSelect(time.integration_name, time.name)
                       }
                     >
-                      <Text style={styles.buttonText}>{optionData.value}</Text>
+                      <Text style={styles.buttonText}>{time.name}</Text>
                     </TouchableOpacity>
                   </View>
                 );

@@ -94,7 +94,7 @@ const OrderDetails = ({
                   (item: { node: LineItemNode }, index: number) => (
                     <OrderLineItem
                       node={item.node}
-                      key={`${item.node.variant.id}-${index}`}
+                      key={`${item.node.title}-${index}`}
                     />
                   )
                 )}

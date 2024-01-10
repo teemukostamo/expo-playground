@@ -192,10 +192,8 @@ export default function Page() {
           pickupOptions={JSON.parse(
             data.collectionByHandle.pickup_options.value
           )}
-          timeOptions={JSON.parse(data.collectionByHandle.pickup_times.value)}
         />
       )}
-
       {selectedPickupLocation !== null && selectedPickupTime !== null ? (
         <ProductListing
           products={filterProducts(
