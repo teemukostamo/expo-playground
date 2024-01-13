@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -7,8 +7,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import theme from '../../../theme';
 
-const HamburgerIcon = () => {
-  const [isOpen, setIsOpen] = useState(false);
+type Props = {
+  isOpen: boolean;
+  toggleMenu: () => void;
+};
+
+const HamburgerIcon = ({ isOpen, toggleMenu }: Props) => {
   const rotation = useSharedValue(0);
 
   const topBarAnimatedStyle = useAnimatedStyle(() => {
@@ -35,14 +39,14 @@ const HamburgerIcon = () => {
     };
   });
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+  const handlePress = () => {
+    toggleMenu();
     rotation.value = withTiming(isOpen ? 0 : 45, { duration: 300 });
   };
 
   return (
     <TouchableOpacity
-      onPress={toggleMenu}
+      onPress={handlePress}
       style={{
         width: 35,
         height: 24,

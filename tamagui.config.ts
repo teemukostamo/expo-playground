@@ -1,6 +1,7 @@
 import { createMedia } from '@tamagui/react-native-media-driver';
 import { config } from '@tamagui/config/v2-reanimated';
 import { createTamagui, createFont } from 'tamagui';
+import { themes } from '@tamagui/themes';
 
 const regular = createFont({
   family: 'regular',
@@ -67,19 +68,37 @@ const title = createFont({
   },
 });
 
+const tokens = {
+  ...config.tokens,
+  color: {
+    ...config.tokens.color,
+    linecutDarkBlue: '#002A46',
+    linecutDarkGold: '#D39C2E',
+    linecutLightGold: '#E6B83D',
+  },
+};
+
 const tamaguiConfig = createTamagui({
   ...config,
   fonts: {
     heading: title,
     body: regular,
   },
-  tokens: {
-    ...config.tokens,
-    color: {
-      ...config.tokens.color,
-      linecutDarkBlue: '#002A46',
-      linecutDarkGold: '#D39C2E',
-      linecutLightGold: '#E6B83D',
+  tokens,
+  themes: {
+    dark: {
+      ...themes.dark,
+      background: tokens.color.linecutDarkBlue,
+      bg: tokens.color.linecutDarkBlue,
+      color: tokens.color.linecutDarkGold,
+      accent: tokens.color.linecutLightGold,
+    },
+    light: {
+      ...themes.light,
+      background: '#fff',
+      bg: '#fff',
+      color: tokens.color.linecutDarkBlue,
+      accent: tokens.color.linecutLightGold,
     },
   },
 });

@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
-import { Link, router, usePathname } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { useMedia, useTheme, XStack, YStack } from 'tamagui'; // note: design system can use @tamagui/core
+import { useMedia, useTheme, XStack, YStack } from 'tamagui';
 
 import Animated, {
   useAnimatedStyle,
@@ -37,7 +37,12 @@ const FooterIcon = ({ text, icon, href }: FooterIconProps) => {
     <View style={styles.iconContainer}>
       <TouchableOpacity onPress={() => router.push(href)}>
         <Animated.View style={[styles.iconContainer, animatedStyles]}>
-          <FontAwesome name={icon} size={20} color='black' />
+          <FontAwesome
+            style={{ marginBottom: 2 }}
+            name={icon}
+            size={20}
+            color='black'
+          />
           <Text style={[styles.iconText, isActive && styles.activeIconText]}>
             {text}
           </Text>
@@ -91,7 +96,7 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   footer: {
-    height: 50,
+    height: 55,
     backgroundColor: theme.colors.darkgold,
     flexDirection: 'row',
     width: '100%',
@@ -99,7 +104,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   iconText: {

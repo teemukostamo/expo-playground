@@ -31,7 +31,6 @@ export default function HomeLayout() {
 
   return (
     <>
-      <StatusBar barStyle='light-content' />
       {auth.token === null ? (
         <View style={styles.container}>
           <Slot />

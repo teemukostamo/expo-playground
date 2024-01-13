@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const OverlayMenu = ({ visible }: { visible: boolean }) => {
+const OverlayMenu = ({ isOpen }: { isOpen: boolean }) => {
   const opacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -18,9 +18,9 @@ const OverlayMenu = ({ visible }: { visible: boolean }) => {
   useEffect(() => {
     // Start the opening animation when the component mounts
     opacity.value = withTiming(1, { duration: 300 });
-  }, [visible]);
+  }, [isOpen]);
 
-  return (
+  return isOpen ? (
     <Animated.View
       style={[
         {
@@ -32,7 +32,8 @@ const OverlayMenu = ({ visible }: { visible: boolean }) => {
           backgroundColor: 'rgba(0, 0, 0, 0.9)',
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 1000, // Make sure it's above all other content
+          zIndex: isOpen ? 1 : 0,
+          height: '100%',
         },
         animatedStyle,
       ]}
@@ -44,7 +45,7 @@ const OverlayMenu = ({ visible }: { visible: boolean }) => {
         {/* Add more menu items as needed */}
       </View>
     </Animated.View>
-  );
+  ) : null;
 };
 
 export default OverlayMenu;

@@ -11,7 +11,6 @@ import { WebView } from 'react-native-webview';
 
 export default function Checkout() {
   const { webUrl, prevRoute } = useLocalSearchParams();
-  console.log(prevRoute);
 
   const handleNavigationChange = (navState: { url: string }) => {
     // Check the URL and determine if it's the thank you page

@@ -3,32 +3,34 @@ import { createContext, Dispatch } from 'react';
 import type { Auth, AuthAction } from './auth';
 import { authReducer, isAuthAction } from './auth';
 
-import type { Locale, LocaleAction } from './locale';
-import { localeReducer, isLocaleAction } from './locale';
+import type { LayoutStateType, LayoutActionType } from './layout';
+import { localeReducer, isLayoutAction } from './layout';
 
 type InitialStateType = {
   auth: Auth;
-  locale: Locale;
+  layout: LayoutStateType;
 };
 
-export const initialState = {
+export const initialState: InitialStateType = {
   auth: {
     token: null,
     expiresAt: null,
   },
-  locale: {
+  layout: {
     lang: 'en',
+    isMenuOpen: false,
+    theme: 'dark',
   },
 };
 
-export type ActionTypes = AuthAction | LocaleAction;
+export type ActionTypes = AuthAction | LayoutActionType;
 
 export const mainReducer = (
-  { auth, locale }: InitialStateType,
+  { auth, layout }: InitialStateType,
   action: ActionTypes
 ): InitialStateType => ({
   auth: isAuthAction(action) ? authReducer(auth, action) : auth,
-  locale: isLocaleAction(action) ? localeReducer(locale, action) : locale,
+  layout: isLayoutAction(action) ? localeReducer(layout, action) : layout,
 });
 
 export const AppContext = createContext<{
