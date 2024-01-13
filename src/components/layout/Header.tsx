@@ -1,11 +1,9 @@
 import { useContext } from 'react';
 import { StyleSheet, ImageBackground, Dimensions } from 'react-native';
-import { Theme, View } from 'tamagui';
+import { View } from 'tamagui';
 import { Link } from 'expo-router';
-import HamburgerIcon from './HamburgerIcon';
-import theme from '../../../theme';
 import { AppContext } from '../../context/main';
-import OverlayMenu from './OverlayMenu';
+import Navigation from './navigation';
 import { toggleMenuAction } from '../../context/layout';
 // Get the screen's width and height
 const { width, height } = Dimensions.get('window');
@@ -24,23 +22,17 @@ export default function Header() {
   const logoWhite = require('../../../assets/images/logo_white.png');
   const logoGold = require('../../../assets/images/logo_gold.png');
   return (
-    <Theme name={state.layout.theme}>
-      <View backgroundColor='$background' style={styles.headerContainer}>
-        <Link href='/'>
-          <ImageBackground
-            source={state.layout.theme === 'light' ? logoGold : logoWhite}
-            style={styles.headerLogo}
-            resizeMode='contain'
-            alt='Linecut Logo'
-          />
-        </Link>
-        <HamburgerIcon
-          toggleMenu={toggleMenu}
-          isOpen={state.layout.isMenuOpen}
+    <View backgroundColor='$background' style={styles.headerContainer}>
+      <Link href='/'>
+        <ImageBackground
+          source={state.layout.theme === 'light' ? logoGold : logoWhite}
+          style={styles.headerLogo}
+          resizeMode='contain'
+          alt='Linecut Logo'
         />
-        <OverlayMenu isOpen={state.layout.isMenuOpen} />
-      </View>
-    </Theme>
+      </Link>
+      <Navigation />
+    </View>
   );
 }
 

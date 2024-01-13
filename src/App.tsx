@@ -33,27 +33,29 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView
-      onLayout={onLayoutRootView}
-      style={{ flex: 1, backgroundColor }}
-    >
-      {Platform.OS === 'android' && <View height={22} />}
-      <StatusBar
-        animated
-        style={state.layout.theme === 'dark' ? 'light' : 'dark'}
-      />
-      {state.auth.token === null ? (
-        <View
-          backgroundColor='$background'
-          flex={1}
-          alignItems='center'
-          justifyContent='center'
-        >
+    <>
+      <SafeAreaView
+        onLayout={onLayoutRootView}
+        style={{ flex: 1, backgroundColor }}
+      >
+        {Platform.OS === 'android' && <View height={22} />}
+        <StatusBar
+          animated
+          style={state.layout.theme === 'dark' ? 'light' : 'dark'}
+        />
+        {state.auth.token === null ? (
+          <View
+            backgroundColor='$background'
+            flex={1}
+            alignItems='center'
+            justifyContent='center'
+          >
+            <Slot />
+          </View>
+        ) : (
           <Slot />
-        </View>
-      ) : (
-        <Slot />
-      )}
-    </SafeAreaView>
+        )}
+      </SafeAreaView>
+    </>
   );
 }

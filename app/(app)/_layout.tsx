@@ -47,13 +47,8 @@ export default function HomeLayout() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: theme.colors.darkblue,
-  },
   container: {
     flex: 1,
-    backgroundColor: theme.colors.darkblue,
     alignItems: 'center',
     justifyContent: 'center',
   },
